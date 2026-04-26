@@ -100,20 +100,20 @@ export function FeedTable({ rows }: { rows: FeedRow[] }) {
 
   return (
     <div className="panel">
-      <div className="flex flex-wrap items-center gap-3 px-5 py-4 border-b border-white/[0.05]">
-        <div className="relative">
+      <div className="flex flex-wrap items-center gap-3 px-4 sm:px-5 py-4 border-b border-white/[0.05]">
+        <div className="relative w-full sm:w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search employee, role, site…"
-            className="input pl-9 w-72"
+            className="input pl-9"
           />
         </div>
         <select
           value={siteFilter}
           onChange={(e) => setSiteFilter(e.target.value)}
-          className="input w-44"
+          className="input flex-1 min-w-0 sm:flex-none sm:w-44"
         >
           <option value="all">All sites</option>
           {sites.map(([id, name]) => (
@@ -125,7 +125,7 @@ export function FeedTable({ rows }: { rows: FeedRow[] }) {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="input w-44"
+          className="input flex-1 min-w-0 sm:flex-none sm:w-44"
         >
           <option value="all">All statuses</option>
           <option value="Cleared">Cleared</option>
@@ -134,12 +134,13 @@ export function FeedTable({ rows }: { rows: FeedRow[] }) {
         </select>
 
         <div className="ml-auto flex items-center gap-2">
-          <span className="text-xs text-zinc-500">
+          <span className="text-xs text-zinc-500 whitespace-nowrap">
             {sorted.length} of {rows.length}
           </span>
           <button onClick={handleExport} className="btn-soft">
             <Download className="h-3.5 w-3.5" />
-            Export CSV
+            <span className="hidden sm:inline">Export CSV</span>
+            <span className="sm:hidden">CSV</span>
           </button>
         </div>
       </div>

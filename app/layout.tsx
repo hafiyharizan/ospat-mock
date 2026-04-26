@@ -29,7 +29,7 @@ export default function RootLayout({
         <div className="lg:pl-60">
           <Topbar />
           <SummaryBar />
-          <main className="px-5 py-6 max-w-[1400px] mx-auto">{children}</main>
+          <main className="px-4 sm:px-5 py-5 sm:py-6 max-w-[1400px] mx-auto">{children}</main>
         </div>
       </body>
     </html>

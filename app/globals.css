@@ -47,7 +47,7 @@ body {
     @apply rounded-xl border border-white/[0.06] bg-zinc-900/40 backdrop-blur-sm shadow-card;
   }
   .panel-padded {
-    @apply panel p-5;
+    @apply panel p-4 sm:p-5;
   }
   .hairline {
     @apply border-white/[0.06];

@@ -1,16 +1,20 @@
 import { Search } from "lucide-react";
 import { DemoBadge } from "./DemoBadge";
+import { MobileNav } from "./MobileNav";
 
 export function Topbar() {
   return (
     <header className="sticky top-0 z-30 bg-zinc-950/80 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/60">
-      <div className="flex h-16 items-center gap-4 border-b border-white/[0.06] px-5">
-        <div className="flex flex-col leading-tight">
+      <div className="flex h-16 items-center gap-3 border-b border-white/[0.06] px-4 sm:px-5">
+        <MobileNav />
+
+        <div className="flex flex-col leading-tight min-w-0">
           <span className="text-[10px] uppercase tracking-widest text-zinc-500">
             Operations
           </span>
-          <span className="text-sm font-semibold text-white">
-            Workforce Readiness Console
+          <span className="text-sm font-semibold text-white truncate">
+            <span className="hidden sm:inline">Workforce Readiness </span>
+            Console
           </span>
         </div>
 
