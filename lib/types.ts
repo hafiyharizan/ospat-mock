@@ -1,6 +1,6 @@
 export type ShiftType = "Day" | "Night" | "FIFO";
 
-export type RiskLevel = "Cleared" | "Monitor" | "Review Required";
+export type AssessmentStatus = "Pass" | "Review" | "Fail";
 
 export type ReviewStatus = "open" | "acknowledged" | "reviewed";
 
@@ -11,15 +11,24 @@ export interface Site {
   type: string;
 }
 
+export interface BaselineMetrics {
+  reactionTimeMs: number;
+  focusScore: number;
+  fatigueRisk: number;
+  coordinationScore: number;
+}
+
 export interface Employee {
   id: string;
   name: string;
   role: string;
   primarySiteId: string;
   primaryShift: ShiftType;
-  baseline: number;
+  baseline: BaselineMetrics;
   joinedISO: string;
 }
+
+export interface MetricSet extends BaselineMetrics {}
 
 export interface Assessment {
   id: string;
@@ -27,16 +36,21 @@ export interface Assessment {
   siteId: string;
   shift: ShiftType;
   timestampISO: string;
-  score: number;
-  deviationPct: number;
-  riskLevel: RiskLevel;
+  metrics: MetricSet;
+  readinessScore: number;
+  overallDeviationPct: number;
+  status: AssessmentStatus;
+  deviations: MetricSet;
+  anomalyZ: number;
+  aiRiskBand: "Stable" | "Watch" | "Escalate";
 }
 
 export interface DashboardKpis {
   totalToday: number;
-  cleared: number;
-  flagged: number;
-  avgScore: number;
+  pass: number;
+  review: number;
+  fail: number;
+  avgReadiness: number;
   highRiskSites: { siteId: string; siteName: string; flagged: number }[];
   trendVsPrevious7Days: number;
 }
@@ -48,9 +62,9 @@ export interface SiteSummary {
   type: string;
   assessments: number;
   flagged: number;
-  avgScore: number;
+  avgReadiness: number;
   highestRiskShift: ShiftType;
-  trend7d: number;
+  trend14d: number;
   recentScores: number[];
 }
 
@@ -58,11 +72,8 @@ export interface EmployeeDetail {
   employee: Employee;
   site: Site;
   recent: Assessment[];
-  baseline: number;
-  latestScore: number;
-  deviationPct: number;
+  latest: Assessment;
   consecutiveDeclines: number;
-  riskLevel: RiskLevel;
   insight: string;
 }
 
