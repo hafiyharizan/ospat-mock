@@ -1,26 +1,15 @@
-import type { RiskLevel } from "./types";
+import type { AssessmentStatus, BaselineMetrics, MetricSet } from "./types";
 
-export function deviationPct(score: number, baseline: number): number {
+export function metricDeviationPct(value: number, baseline: number, invert = false): number {
   if (baseline <= 0) return 0;
-  return ((score - baseline) / baseline) * 100;
+  const raw = ((value - baseline) / baseline) * 100;
+  return invert ? raw * -1 : raw;
 }
 
-export function classify(
-  score: number,
-  baseline: number,
-  recentScores: number[],
-): RiskLevel {
-  const dev = deviationPct(score, baseline);
-
-  if (dev <= -15) return "Review Required";
-
-  const consecutiveDeclines = countConsecutiveDeclines([...recentScores, score]);
-  const belowBaseline = score < baseline;
-  if (consecutiveDeclines >= 3 && belowBaseline) return "Review Required";
-
-  if (dev <= -10) return "Monitor";
-
-  return "Cleared";
+export function classifyStatus(readinessScore: number, fatigueRisk: number, anomalyZ: number): AssessmentStatus {
+  if (readinessScore < 58 || fatigueRisk >= 74 || anomalyZ <= -2.2) return "Fail";
+  if (readinessScore < 72 || fatigueRisk >= 62 || anomalyZ <= -1.4) return "Review";
+  return "Pass";
 }
 
 export function countConsecutiveDeclines(scores: number[]): number {
@@ -33,32 +22,29 @@ export function countConsecutiveDeclines(scores: number[]): number {
   return count;
 }
 
-export function reasonText(
-  score: number,
-  baseline: number,
-  recentScores: number[],
-): string {
-  const dev = deviationPct(score, baseline);
-  const declines = countConsecutiveDeclines([...recentScores, score]);
-  if (dev <= -15) {
-    return `Score ${Math.abs(dev).toFixed(0)}% below personal baseline.`;
-  }
-  if (declines >= 3 && score < baseline) {
-    return `${declines} consecutive declining results below baseline.`;
-  }
-  if (dev <= -10) {
-    return `Score ${Math.abs(dev).toFixed(0)}% below baseline (monitor).`;
-  }
-  return "Within normal range.";
+export function readinessScore(metrics: MetricSet): number {
+  const reactionNorm = Math.max(0, Math.min(100, ((500 - metrics.reactionTimeMs) / 250) * 100));
+  const fatigueNorm = Math.max(0, 100 - metrics.fatigueRisk);
+  return Number((reactionNorm * 0.3 + metrics.focusScore * 0.25 + fatigueNorm * 0.2 + metrics.coordinationScore * 0.25).toFixed(1));
 }
 
-export function suggestedActionText(level: RiskLevel): string {
-  switch (level) {
-    case "Review Required":
-      return "Hold from shift. Supervisor 1:1, fatigue check, repeat assessment in 30m.";
-    case "Monitor":
-      return "Pair with experienced operator. Re-assess after first break.";
-    case "Cleared":
-      return "Proceed to shift.";
-  }
+export function metricDeviations(metrics: MetricSet, baseline: BaselineMetrics): MetricSet {
+  return {
+    reactionTimeMs: Number(metricDeviationPct(metrics.reactionTimeMs, baseline.reactionTimeMs, true).toFixed(1)),
+    focusScore: Number(metricDeviationPct(metrics.focusScore, baseline.focusScore).toFixed(1)),
+    fatigueRisk: Number(metricDeviationPct(metrics.fatigueRisk, baseline.fatigueRisk, true).toFixed(1)),
+    coordinationScore: Number(metricDeviationPct(metrics.coordinationScore, baseline.coordinationScore).toFixed(1)),
+  };
+}
+
+export function reasonText(status: AssessmentStatus, readiness: number, anomalyZ: number): string {
+  if (status === "Fail") return `Readiness dropped to ${readiness.toFixed(1)} with anomaly z-score ${anomalyZ.toFixed(2)}.`;
+  if (status === "Review") return `Borderline readiness (${readiness.toFixed(1)}). AI drift monitor triggered at z ${anomalyZ.toFixed(2)}.`;
+  return `Within expected baseline envelope (z ${anomalyZ.toFixed(2)}).`;
+}
+
+export function suggestedActionText(status: AssessmentStatus): string {
+  if (status === "Fail") return "Do not start high-risk task. Supervisor intervention, hydration/fatigue protocol, and retest in 30 minutes.";
+  if (status === "Review") return "Assign low-risk duties, re-screen after first break, and confirm supervisor check-in.";
+  return "Cleared to begin shift under standard controls.";
 }

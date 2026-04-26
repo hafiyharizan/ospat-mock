@@ -3,8 +3,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { ReviewQueue, type ReviewCaseProps } from "@/components/review/ReviewQueue";
 
 export default function ReviewPage() {
-  const flagged = getFlaggedCases();
-  const cases: ReviewCaseProps[] = flagged.map((f) => ({
+  const cases: ReviewCaseProps[] = getFlaggedCases().map((f) => ({
     assessmentId: f.assessment.id,
     employeeId: f.employee.id,
     employeeName: f.employee.name,
@@ -12,21 +11,17 @@ export default function ReviewPage() {
     siteName: f.site.name,
     shift: f.assessment.shift,
     timestampISO: f.assessment.timestampISO,
-    score: f.assessment.score,
-    baseline: f.employee.baseline,
-    deviationPct: f.assessment.deviationPct,
-    riskLevel: f.assessment.riskLevel,
+    readinessScore: f.assessment.readinessScore,
+    reactionTimeMs: f.assessment.metrics.reactionTimeMs,
+    focusScore: f.assessment.metrics.focusScore,
+    fatigueRisk: f.assessment.metrics.fatigueRisk,
+    coordinationScore: f.assessment.metrics.coordinationScore,
+    deviationPct: f.assessment.overallDeviationPct,
+    status: f.assessment.status,
     reason: f.reason,
     suggestedAction: f.suggestedAction,
+    anomalyZ: f.assessment.anomalyZ,
   }));
 
-  return (
-    <div>
-      <PageHeader
-        title="Supervisor Review Queue"
-        description="Cases requiring supervisor attention. Acknowledge to take ownership; mark reviewed once resolved."
-      />
-      <ReviewQueue cases={cases} />
-    </div>
-  );
+  return <div><PageHeader title="Supervisor Review Queue" description="Employees in Review or Fail status with AI anomaly context." /><ReviewQueue cases={cases} /></div>;
 }

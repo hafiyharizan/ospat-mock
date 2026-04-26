@@ -39,7 +39,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <ThemeProvider>
           <Sidebar />
-          <div className="lg:pl-60">
+          <div className="lg:pl-64">
             <Topbar />
             <SummaryBar />
             <main className="px-4 sm:px-5 py-5 sm:py-6 max-w-[1400px] mx-auto animate-fade-in">
