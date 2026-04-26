@@ -35,8 +35,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       if (saved === "light" || saved === "dark" || saved === "auto") {
         setThemeState(saved);
       }
-    } catch {
-      // localStorage unavailable (SSR / sandboxed)
+    } catch (err) {
+      console.warn("[ThemeProvider] Could not read theme from localStorage:", err);
     }
   }, []);
 
@@ -63,8 +63,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setThemeState(t);
     try {
       localStorage.setItem(STORAGE_KEY, t);
-    } catch {
-      // ignore
+    } catch (err) {
+      console.warn("[ThemeProvider] Could not persist theme to localStorage:", err);
     }
   };
 
