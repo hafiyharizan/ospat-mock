@@ -31,7 +31,7 @@ export function SummaryBar() {
 
   return (
     <div className="border-b border-white/[0.06] bg-zinc-950/60 backdrop-blur">
-      <div className="flex flex-wrap items-center gap-x-8 gap-y-2 px-5 py-2.5 text-xs">
+      <div className="flex flex-wrap items-center gap-x-6 sm:gap-x-8 gap-y-2 px-4 sm:px-5 py-2.5 text-xs">
         <div className="flex items-center gap-2">
           <span className="text-zinc-500">Today</span>
           <span className="text-zinc-100 font-semibold">{kpis.totalToday}</span>
@@ -55,7 +55,7 @@ export function SummaryBar() {
           <span className="text-zinc-500">7-day trend</span>
           <TrendChip value={kpis.trendVsPrevious7Days} />
         </div>
-        <div className="ml-auto flex items-center gap-1.5 text-zinc-500">
+        <div className="hidden sm:flex ml-auto items-center gap-1.5 text-zinc-500">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
           Live · simulated stream
         </div>
