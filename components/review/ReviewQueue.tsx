@@ -114,7 +114,7 @@ export function ReviewQueue({ cases }: { cases: ReviewCaseProps[] }) {
                     <div className="flex items-center gap-3 flex-wrap">
                       <Link
                         href={`/employees/${c.employeeId}`}
-                        className="text-base font-semibold text-white hover:text-indigo-200"
+                        className="text-base font-semibold text-zinc-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-200"
                       >
                         {c.employeeName}
                       </Link>
@@ -132,7 +132,7 @@ export function ReviewQueue({ cases }: { cases: ReviewCaseProps[] }) {
                     <div className="text-[10px] uppercase tracking-widest text-zinc-500">
                       Score
                     </div>
-                    <div className="text-lg font-semibold text-white tabular-nums">
+                    <div className="text-lg font-semibold text-zinc-900 dark:text-white tabular-nums">
                       {c.score}
                       <span className="text-xs text-zinc-500 font-normal">
                         {" "}
@@ -153,17 +153,17 @@ export function ReviewQueue({ cases }: { cases: ReviewCaseProps[] }) {
                 </div>
 
                 <div className="mt-4 grid gap-3 md:grid-cols-2">
-                  <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
+                  <div className="rounded-lg border border-zinc-200 dark:border-white/[0.06] bg-zinc-50 dark:bg-white/[0.02] p-3">
                     <div className="text-[10px] uppercase tracking-widest text-zinc-500">
                       Reason flagged
                     </div>
-                    <p className="mt-1 text-sm text-zinc-200">{c.reason}</p>
+                    <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-200">{c.reason}</p>
                   </div>
-                  <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
+                  <div className="rounded-lg border border-zinc-200 dark:border-white/[0.06] bg-zinc-50 dark:bg-white/[0.02] p-3">
                     <div className="text-[10px] uppercase tracking-widest text-zinc-500">
                       Suggested action
                     </div>
-                    <p className="mt-1 text-sm text-zinc-200">
+                    <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-200">
                       {c.suggestedAction}
                     </p>
                   </div>
@@ -238,15 +238,17 @@ function Tab({
     <button
       onClick={onClick}
       className={clsx(
-        "panel-padded text-left transition-colors",
-        active ? "ring-1 ring-indigo-400/40" : "hover:bg-white/[0.04]",
+        "panel-padded text-left transition-colors duration-150",
+        active
+          ? "ring-1 ring-indigo-400/40"
+          : "hover:bg-zinc-50 dark:hover:bg-white/[0.04]",
       )}
     >
       <div className="flex items-center gap-2">
         <span className={clsx("h-1.5 w-1.5 rounded-full", dot)} />
         <span className="label">{label}</span>
       </div>
-      <div className="mt-2 text-2xl font-semibold text-white tabular-nums">
+      <div className="mt-2 text-2xl font-semibold text-zinc-900 dark:text-white tabular-nums">
         {value}
       </div>
     </button>
@@ -256,7 +258,7 @@ function Tab({
 function StatusChip({ status }: { status: "open" | "acknowledged" | "reviewed" }) {
   if (status === "open") {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium bg-white/[0.04] text-zinc-400 border border-white/[0.06]">
+      <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium bg-zinc-100 dark:bg-white/[0.04] text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-white/[0.06]">
         Open
       </span>
     );

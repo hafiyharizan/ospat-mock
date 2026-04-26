@@ -32,7 +32,7 @@ export default async function EmployeeDetailPage({
     <div>
       <Link
         href="/feed"
-        className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-200 mb-3"
+        className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 mb-3"
       >
         <ArrowLeft className="h-3 w-3" />
         Back to live feed
@@ -41,11 +41,11 @@ export default async function EmployeeDetailPage({
       <div className="panel-padded">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500/30 to-violet-500/20 border border-white/[0.06]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500/20 to-violet-500/10 dark:from-indigo-500/30 dark:to-violet-500/20 border border-indigo-200 dark:border-white/[0.06]">
               <User className="h-5 w-5 text-indigo-300" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-white">
+              <h1 className="text-xl font-semibold text-zinc-900 dark:text-white">
                 {detail.employee.name}
               </h1>
               <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-400">
@@ -106,7 +106,7 @@ export default async function EmployeeDetailPage({
 
         <div className="panel">
           <div className="px-5 pt-5">
-            <h3 className="text-sm font-semibold text-white">Timeline</h3>
+            <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">Timeline</h3>
             <p className="text-xs text-zinc-500 mt-0.5">Most recent first</p>
           </div>
           <ul className="px-5 py-4 max-h-80 overflow-y-auto space-y-3">
@@ -127,7 +127,7 @@ export default async function EmployeeDetailPage({
                     <span className="text-xs text-zinc-500">
                       {formatDateTime(a.timestampISO)}
                     </span>
-                    <span className="text-xs font-semibold tabular-nums text-zinc-100">
+                    <span className="text-xs font-semibold tabular-nums text-zinc-800 dark:text-zinc-100">
                       {a.score}
                     </span>
                   </div>
@@ -165,27 +165,27 @@ function InsightCard({
 }) {
   const accent =
     level === "Review Required"
-      ? "border-rose-400/20 bg-rose-400/[0.04]"
+      ? "border-rose-400/20 bg-rose-50 dark:bg-rose-400/[0.04]"
       : level === "Monitor"
-        ? "border-amber-400/20 bg-amber-400/[0.04]"
-        : "border-emerald-400/20 bg-emerald-400/[0.04]";
+        ? "border-amber-400/20 bg-amber-50 dark:bg-amber-400/[0.04]"
+        : "border-emerald-400/20 bg-emerald-50 dark:bg-emerald-400/[0.04]";
   const iconColor =
     level === "Review Required"
-      ? "text-rose-300"
+      ? "text-rose-500 dark:text-rose-300"
       : level === "Monitor"
-        ? "text-amber-300"
-        : "text-emerald-300";
+        ? "text-amber-500 dark:text-amber-300"
+        : "text-emerald-500 dark:text-emerald-300";
 
   return (
     <div className={clsx("rounded-xl border p-4 flex gap-3 items-start", accent)}>
-      <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white/[0.04] border border-white/[0.06]">
+      <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white/60 dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.06]">
         <Lightbulb className={clsx("h-4 w-4", iconColor)} />
       </div>
       <div>
         <div className="text-[10px] uppercase tracking-widest text-zinc-500">
           Insight
         </div>
-        <p className="mt-0.5 text-sm text-zinc-100">{text}</p>
+        <p className="mt-0.5 text-sm text-zinc-700 dark:text-zinc-100">{text}</p>
       </div>
     </div>
   );

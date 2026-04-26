@@ -20,7 +20,7 @@ export function CardHeader({
   return (
     <div className="flex items-start justify-between gap-4 px-5 pt-5">
       <div>
-        <h3 className="text-sm font-semibold text-white">{title}</h3>
+        <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">{title}</h3>
         {subtitle && (
           <p className="text-xs text-zinc-500 mt-0.5">{subtitle}</p>
         )}
@@ -36,3 +36,4 @@ export function CardBody({
 }: HTMLAttributes<HTMLDivElement>) {
   return <div className={clsx("p-5", className)} {...rest} />;
 }
+

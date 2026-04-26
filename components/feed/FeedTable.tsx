@@ -100,7 +100,7 @@ export function FeedTable({ rows }: { rows: FeedRow[] }) {
 
   return (
     <div className="panel">
-      <div className="flex flex-wrap items-center gap-3 px-4 sm:px-5 py-4 border-b border-white/[0.05]">
+      <div className="flex flex-wrap items-center gap-3 px-4 sm:px-5 py-4 border-b border-zinc-100 dark:border-white/[0.05]">
         <div className="relative w-full sm:w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
           <input
@@ -156,7 +156,7 @@ export function FeedTable({ rows }: { rows: FeedRow[] }) {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-[11px] uppercase tracking-wider text-zinc-500 border-b border-white/[0.05]">
+              <tr className="text-left text-[11px] uppercase tracking-wider text-zinc-500 border-b border-zinc-100 dark:border-white/[0.05]">
                 <Th
                   active={sortKey === "timestampISO"}
                   dir={sortDir}
@@ -204,7 +204,7 @@ export function FeedTable({ rows }: { rows: FeedRow[] }) {
                 return (
                   <tr
                     key={r.assessmentId}
-                    className="group border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors"
+                    className="group border-b border-zinc-50 dark:border-white/[0.04] hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors"
                   >
                     <td className="px-5 py-3 text-zinc-400 whitespace-nowrap">
                       {formatDateTime(r.timestampISO)}
@@ -212,17 +212,17 @@ export function FeedTable({ rows }: { rows: FeedRow[] }) {
                     <td className="px-5 py-3">
                       <Link
                         href={`/employees/${r.employeeId}`}
-                        className="text-zinc-100 hover:text-white font-medium"
+                        className="text-zinc-800 dark:text-zinc-100 hover:text-zinc-900 dark:hover:text-white font-medium"
                       >
                         {r.employeeName}
                       </Link>
                       <div className="text-xs text-zinc-500">{r.role}</div>
                     </td>
-                    <td className="px-5 py-3 text-zinc-300 whitespace-nowrap">
+                    <td className="px-5 py-3 text-zinc-600 dark:text-zinc-300 whitespace-nowrap">
                       {r.siteName}
-                      <div className="text-xs text-zinc-500">{r.shift}</div>
+                      <div className="text-xs text-zinc-400">{r.shift}</div>
                     </td>
-                    <td className="px-5 py-3 text-zinc-100 font-semibold tabular-nums">
+                    <td className="px-5 py-3 text-zinc-800 dark:text-zinc-100 font-semibold tabular-nums">
                       {r.score}
                       <span className="text-xs text-zinc-500 font-normal">
                         {" "}

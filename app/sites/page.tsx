@@ -37,7 +37,7 @@ export default function SitesPage() {
                       {s.region}
                     </span>
                   </div>
-                  <h3 className="mt-1 text-base font-semibold text-white">
+                  <h3 className="mt-1 text-base font-semibold text-zinc-900 dark:text-white">
                     {s.siteName}
                   </h3>
                   <p className="text-xs text-zinc-500">{s.type}</p>
@@ -105,7 +105,7 @@ function Metric({
       <div
         className={clsx(
           "mt-1 text-lg font-semibold tabular-nums",
-          accent === "danger" ? "text-rose-300" : "text-white",
+          accent === "danger" ? "text-rose-500 dark:text-rose-300" : "text-zinc-900 dark:text-white",
         )}
       >
         {value}
