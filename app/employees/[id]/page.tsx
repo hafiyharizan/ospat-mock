@@ -1,13 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Lightbulb, MapPin, User } from "lucide-react";
-import { getEmployeeDetail } from "@/lib/data";
+import { getEmployeeDetail, getEmployees } from "@/lib/data";
 import { ChartCard } from "@/components/charts/ChartCard";
 import { EmployeeScoreChart } from "@/components/charts/EmployeeScoreChart";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { StatCard } from "@/components/ui/StatCard";
 import { formatDateTime } from "@/lib/format";
 import clsx from "clsx";
+
+export function generateStaticParams() {
+  return getEmployees().map((e) => ({ id: e.id }));
+}
 
 export default async function EmployeeDetailPage({
   params,
