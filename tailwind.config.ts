@@ -12,6 +12,30 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-inter)", "ui-sans-serif", "system-ui"],
       },
+      animation: {
+        "fade-in": "fadeIn 0.25s ease-out both",
+        "fade-up": "fadeUp 0.35s ease-out both",
+        "slide-in": "slideIn 0.28s ease-out both",
+        shimmer: "shimmer 1.6s linear infinite",
+      },
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        fadeUp: {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        slideIn: {
+          "0%": { opacity: "0", transform: "translateX(-16px)" },
+          "100%": { opacity: "1", transform: "translateX(0)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-400px 0" },
+          "100%": { backgroundPosition: "400px 0" },
+        },
+      },
       colors: {
         cleared: {
           DEFAULT: "#34d399",

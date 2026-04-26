@@ -28,7 +28,8 @@ export function StatCard({
   return (
     <div
       className={clsx(
-        "panel-padded relative overflow-hidden",
+        "panel-padded relative overflow-hidden animate-fade-up",
+        "hover:-translate-y-0.5 hover:shadow-md transition-all duration-200",
         "before:absolute before:left-0 before:top-5 before:bottom-5 before:w-px",
         accentRing,
       )}
@@ -59,8 +60,8 @@ function DeltaPill({ value }: { value: number }) {
       className={clsx(
         "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium",
         positive
-          ? "bg-emerald-400/10 text-emerald-300"
-          : "bg-rose-400/10 text-rose-300",
+          ? "bg-emerald-400/10 text-emerald-600 dark:text-emerald-300"
+          : "bg-rose-400/10 text-rose-600 dark:text-rose-300",
       )}
     >
       <Icon className="h-3 w-3" />
@@ -68,3 +69,4 @@ function DeltaPill({ value }: { value: number }) {
     </span>
   );
 }
+

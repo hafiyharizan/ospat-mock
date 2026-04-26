@@ -97,7 +97,7 @@ export default function DashboardPage() {
       <div className="mt-6 panel-padded">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-sm font-semibold text-white">High-risk sites</h3>
+            <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">High-risk sites</h3>
             <p className="text-xs text-zinc-500">
               Sites with the most flagged cases today
             </p>
@@ -126,7 +126,7 @@ export default function DashboardPage() {
                     {i + 1}
                   </span>
                   <div>
-                    <div className="text-sm font-medium text-zinc-100">
+                    <div className="text-sm font-medium text-zinc-800 dark:text-zinc-100">
                       {s.siteName}
                     </div>
                     <div className="text-xs text-zinc-500">
@@ -136,7 +136,7 @@ export default function DashboardPage() {
                 </div>
                 <Link
                   href="/sites"
-                  className="text-xs text-zinc-400 hover:text-white inline-flex items-center gap-1"
+                  className="text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-white inline-flex items-center gap-1"
                 >
                   Drill in
                   <ArrowUpRight className="h-3 w-3" />

@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 export default function NotFound() {
   return (
     <div className="panel-padded text-center max-w-md mx-auto mt-10">
-      <h1 className="text-lg font-semibold text-white">Employee not found</h1>
+      <h1 className="text-lg font-semibold text-zinc-900 dark:text-white">Employee not found</h1>
       <p className="mt-1 text-sm text-zinc-400">
         We couldn’t find that employee in the demo dataset.
       </p>

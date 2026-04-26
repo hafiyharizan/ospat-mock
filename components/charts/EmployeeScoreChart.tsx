@@ -10,6 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useChartColors } from "@/lib/useChartColors";
 
 export function EmployeeScoreChart({
   data,
@@ -18,33 +19,35 @@ export function EmployeeScoreChart({
   data: { idx: number; score: number; label: string }[];
   baseline: number;
 }) {
+  const c = useChartColors();
+
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-        <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
+        <CartesianGrid stroke={c.grid} vertical={false} />
         <XAxis
           dataKey="label"
-          tick={{ fill: "#71717a", fontSize: 10 }}
+          tick={{ fill: c.axisTick, fontSize: 10 }}
           tickLine={false}
-          axisLine={{ stroke: "rgba(255,255,255,0.06)" }}
+          axisLine={{ stroke: c.axisLine }}
           interval="preserveStartEnd"
         />
         <YAxis
           domain={[40, 100]}
-          tick={{ fill: "#71717a", fontSize: 11 }}
+          tick={{ fill: c.axisTick, fontSize: 11 }}
           tickLine={false}
           axisLine={false}
           width={32}
         />
         <Tooltip
           contentStyle={{
-            background: "rgba(9,9,11,0.95)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            background: c.tooltipBg,
+            border: c.tooltipBorder,
             borderRadius: 8,
             fontSize: 12,
           }}
-          labelStyle={{ color: "#a1a1aa" }}
-          itemStyle={{ color: "#e4e4e7" }}
+          labelStyle={{ color: c.tooltipLabel }}
+          itemStyle={{ color: c.tooltipItem }}
           formatter={(v: number) => [v, "Score"]}
         />
         <ReferenceLine
@@ -68,10 +71,11 @@ export function EmployeeScoreChart({
           dataKey="score"
           stroke="#a5b4fc"
           strokeWidth={2}
-          dot={{ r: 3, fill: "#a5b4fc", stroke: "#0a0a0b", strokeWidth: 1 }}
+          dot={{ r: 3, fill: "#a5b4fc", stroke: c.dotStroke, strokeWidth: 1 }}
           activeDot={{ r: 5 }}
         />
       </LineChart>
     </ResponsiveContainer>
   );
 }
+

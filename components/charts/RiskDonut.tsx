@@ -1,6 +1,7 @@
 "use client";
 
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { useChartColors } from "@/lib/useChartColors";
 
 const COLORS: Record<string, string> = {
   Cleared: "#34d399",
@@ -14,6 +15,7 @@ export function RiskDonut({
   data: { name: string; value: number }[];
 }) {
   const total = data.reduce((s, d) => s + d.value, 0);
+  const c = useChartColors();
 
   return (
     <div className="relative h-full w-full">
@@ -25,7 +27,7 @@ export function RiskDonut({
             nameKey="name"
             innerRadius="60%"
             outerRadius="85%"
-            stroke="rgba(9,9,11,0.6)"
+            stroke={c.dotStroke}
             strokeWidth={2}
             paddingAngle={2}
           >
@@ -38,18 +40,18 @@ export function RiskDonut({
           </Pie>
           <Tooltip
             contentStyle={{
-              background: "rgba(9,9,11,0.95)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              background: c.tooltipBg,
+              border: c.tooltipBorder,
               borderRadius: 8,
               fontSize: 12,
             }}
-            labelStyle={{ color: "#a1a1aa" }}
-            itemStyle={{ color: "#e4e4e7" }}
+            labelStyle={{ color: c.tooltipLabel }}
+            itemStyle={{ color: c.tooltipItem }}
           />
         </PieChart>
       </ResponsiveContainer>
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-        <div className="text-2xl font-semibold text-white">{total}</div>
+        <div className="text-2xl font-semibold text-zinc-900 dark:text-white">{total}</div>
         <div className="text-[10px] uppercase tracking-widest text-zinc-500">
           today
         </div>
@@ -71,8 +73,8 @@ export function RiskDonutLegend({
             className="h-2 w-2 rounded-sm"
             style={{ background: COLORS[d.name] ?? "#71717a" }}
           />
-          <span className="text-zinc-400">{d.name}</span>
-          <span className="text-zinc-100 font-semibold tabular-nums">
+          <span className="text-zinc-500">{d.name}</span>
+          <span className="text-zinc-800 dark:text-zinc-100 font-semibold tabular-nums">
             {d.value}
           </span>
         </div>
@@ -80,3 +82,4 @@ export function RiskDonutLegend({
     </div>
   );
 }
+
