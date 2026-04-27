@@ -1,6 +1,3 @@
-import clsx from "clsx";
-import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
-
 export function StatCard({
   label,
   value,
@@ -16,57 +13,50 @@ export function StatCard({
   accent?: "default" | "positive" | "warning" | "danger";
   children?: React.ReactNode;
 }) {
-  const accentRing =
-    accent === "positive"
-      ? "before:bg-emerald-400/40"
-      : accent === "warning"
-        ? "before:bg-amber-400/40"
-        : accent === "danger"
-          ? "before:bg-rose-400/40"
-          : "before:bg-indigo-400/40";
+  const accentColor =
+    accent === "positive" ? "var(--success)"
+    : accent === "warning"  ? "var(--warning)"
+    : accent === "danger"   ? "var(--danger)"
+    : "var(--border)";
 
   return (
     <div
-      className={clsx(
-        "panel-padded relative overflow-hidden animate-fade-up",
-        "hover:-translate-y-0.5 hover:shadow-md transition-all duration-200",
-        "before:absolute before:left-0 before:top-5 before:bottom-5 before:w-px",
-        accentRing,
-      )}
+      className="card-padded relative overflow-hidden"
+      style={{ borderLeft: `2px solid ${accentColor}` }}
     >
-      <div className="label">{label}</div>
-      <div className="mt-2 flex items-baseline gap-3">
-        <div className="metric">{value}</div>
-        {typeof delta === "number" && <DeltaPill value={delta} />}
+      <div className="text-[12.5px] font-medium" style={{ color: "var(--fg-muted)" }}>
+        {label}
       </div>
-      {hint && <div className="mt-1 text-xs text-zinc-500">{hint}</div>}
+      <div className="mt-2 flex items-baseline gap-2">
+        <span
+          className="font-mono text-[26px] font-semibold leading-none"
+          style={{ color: "var(--fg)", letterSpacing: "-0.01em", fontFeatureSettings: '"tnum"' }}
+        >
+          {value}
+        </span>
+        {typeof delta === "number" && <DeltaChip value={delta} />}
+      </div>
+      {hint && (
+        <div className="mt-1 text-[12px]" style={{ color: "var(--fg-subtle)" }}>{hint}</div>
+      )}
       {children && <div className="mt-3">{children}</div>}
     </div>
   );
 }
 
-function DeltaPill({ value }: { value: number }) {
-  if (value === 0) {
-    return (
-      <span className="inline-flex items-center gap-1 text-xs text-zinc-500">
-        <Minus className="h-3 w-3" /> 0.0%
-      </span>
-    );
-  }
+function DeltaChip({ value }: { value: number }) {
   const positive = value > 0;
-  const Icon = positive ? ArrowUpRight : ArrowDownRight;
   return (
     <span
-      className={clsx(
-        "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium",
-        positive
-          ? "bg-emerald-400/10 text-emerald-600 dark:text-emerald-300"
-          : "bg-rose-400/10 text-rose-600 dark:text-rose-300",
-      )}
+      className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 font-mono text-[11px] font-medium"
+      style={{
+        background: positive
+          ? "color-mix(in oklch, var(--success) 12%, var(--bg))"
+          : "color-mix(in oklch, var(--danger) 12%, var(--bg))",
+        color: positive ? "var(--success)" : "var(--danger)",
+      }}
     >
-      <Icon className="h-3 w-3" />
-      {Math.abs(value).toFixed(1)}%
+      {positive ? "↑" : "↓"} {Math.abs(value).toFixed(1)}%
     </span>
   );
 }
-

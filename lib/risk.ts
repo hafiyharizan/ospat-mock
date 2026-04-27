@@ -38,13 +38,13 @@ export function metricDeviations(metrics: MetricSet, baseline: BaselineMetrics):
 }
 
 export function reasonText(status: AssessmentStatus, readiness: number, anomalyZ: number): string {
-  if (status === "Fail") return `Readiness dropped to ${readiness.toFixed(1)} with anomaly z-score ${anomalyZ.toFixed(2)}.`;
-  if (status === "Review") return `Borderline readiness (${readiness.toFixed(1)}). AI drift monitor triggered at z ${anomalyZ.toFixed(2)}.`;
+  if (status === "Fail") return `Flag state: readiness dropped to ${readiness.toFixed(1)} with anomaly z-score ${anomalyZ.toFixed(2)}.`;
+  if (status === "Review") return `Retest state: borderline readiness (${readiness.toFixed(1)}). AI drift monitor triggered at z ${anomalyZ.toFixed(2)}.`;
   return `Within expected baseline envelope (z ${anomalyZ.toFixed(2)}).`;
 }
 
 export function suggestedActionText(status: AssessmentStatus): string {
-  if (status === "Fail") return "Do not start high-risk task. Supervisor intervention, hydration/fatigue protocol, and retest in 30 minutes.";
+  if (status === "Fail") return "Do not start high-risk task. Route to supervisor, apply fatigue protocol, and retest in 30 minutes.";
   if (status === "Review") return "Assign low-risk duties, re-screen after first break, and confirm supervisor check-in.";
   return "Cleared to begin shift under standard controls.";
 }

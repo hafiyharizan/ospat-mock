@@ -1,4 +1,4 @@
-# OSPAT Insights Concept
+# OSPAT+ Operations Concept
 
 A polished MVP web dashboard exploring how a workforce-readiness / fitness-for-work
 platform could surface trends to safety supervisors in mining, transport, civil,
@@ -134,7 +134,7 @@ Because the seed is fixed, screenshots and demo videos stay reproducible.
 - "Demo data only" badge in the topbar at all times
 - CSV export from the feed produces a real file from the currently filtered rows
 - Status colors are consistent across badges, dots, sparklines, and charts:
-  emerald = Cleared, amber = Monitor, rose = Review Required
+  sage = Pass, amber = Retest, coral = Flag
 
 ## Future roadmap
 

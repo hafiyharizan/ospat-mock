@@ -23,8 +23,8 @@ export function SiteBarChart({
       <BarChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id="bar-grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#a5b4fc" />
-            <stop offset="100%" stopColor="#6366f1" />
+            <stop offset="0%" stopColor="#c9dbd1" />
+            <stop offset="100%" stopColor="#5a8a7a" />
           </linearGradient>
         </defs>
         <CartesianGrid stroke={c.grid} vertical={false} />

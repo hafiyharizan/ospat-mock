@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: "class",
+  darkMode: ["class", '[data-theme="dark"]'],
   content: [
     "./app/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -10,55 +10,59 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-inter)", "ui-sans-serif", "system-ui"],
+        sans:    ["var(--font-inter)", "Inter", "ui-sans-serif", "system-ui"],
+        mono:    ["var(--font-mono)", "JetBrains Mono", "ui-monospace", "SFMono-Regular"],
+        display: ["var(--font-inter)", "Inter", "-apple-system", "system-ui"],
+      },
+      colors: {
+        ospat: {
+          bg:          "var(--bg)",
+          "bg-elev":   "var(--bg-elev)",
+          "bg-sunken": "var(--bg-sunken)",
+          fg:          "var(--fg)",
+          "fg-muted":  "var(--fg-muted)",
+          "fg-subtle": "var(--fg-subtle)",
+          "fg-faint":  "var(--fg-faint)",
+          border:      "var(--border)",
+          accent:      "var(--accent)",
+          success:     "var(--success)",
+          warning:     "var(--warning)",
+          danger:      "var(--danger)",
+          info:        "var(--info)",
+        },
+      },
+      borderRadius: {
+        xs:  "3px",
+        sm:  "5px",
+        md:  "7px",
+        lg:  "10px",
+        xl:  "14px",
+        "2xl": "20px",
+      },
+      boxShadow: {
+        xs:     "var(--shadow-xs)",
+        sm:     "var(--shadow-sm)",
+        md:     "var(--shadow-md)",
+        button: "var(--shadow-button)",
       },
       animation: {
-        "fade-in": "fadeIn 0.25s ease-out both",
-        "fade-up": "fadeUp 0.35s ease-out both",
-        "slide-in": "slideIn 0.28s ease-out both",
-        shimmer: "shimmer 1.6s linear infinite",
+        "fade-in":   "fadeIn 200ms cubic-bezier(0.22,1,0.36,1) both",
+        "fade-up":   "fadeUp 240ms cubic-bezier(0.22,1,0.36,1) both",
+        "ospat-pulse":"ospatPulse 1.6s ease-in-out infinite",
       },
       keyframes: {
         fadeIn: {
-          "0%": { opacity: "0" },
-          "100%": { opacity: "1" },
-        },
-        fadeUp: {
-          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "0%":   { opacity: "0", transform: "translateY(4px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        slideIn: {
-          "0%": { opacity: "0", transform: "translateX(-16px)" },
-          "100%": { opacity: "1", transform: "translateX(0)" },
+        fadeUp: {
+          "0%":   { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        shimmer: {
-          "0%": { backgroundPosition: "-400px 0" },
-          "100%": { backgroundPosition: "400px 0" },
+        ospatPulse: {
+          "0%, 100%": { opacity: "1" },
+          "50%":      { opacity: "0.35" },
         },
-      },
-      colors: {
-        cleared: {
-          DEFAULT: "#34d399",
-          soft: "rgba(52, 211, 153, 0.12)",
-          ring: "rgba(52, 211, 153, 0.35)",
-        },
-        monitor: {
-          DEFAULT: "#fbbf24",
-          soft: "rgba(251, 191, 36, 0.12)",
-          ring: "rgba(251, 191, 36, 0.35)",
-        },
-        review: {
-          DEFAULT: "#fb7185",
-          soft: "rgba(251, 113, 133, 0.12)",
-          ring: "rgba(251, 113, 133, 0.40)",
-        },
-      },
-      boxShadow: {
-        card: "0 1px 0 0 rgba(255,255,255,0.04) inset, 0 0 0 1px rgba(255,255,255,0.04)",
-      },
-      backgroundImage: {
-        "command-radial":
-          "radial-gradient(1200px 600px at 70% -10%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(900px 400px at 0% 0%, rgba(16,185,129,0.06), transparent 60%)",
       },
     },
   },

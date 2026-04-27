@@ -52,26 +52,26 @@ export function EmployeeScoreChart({
         />
         <ReferenceLine
           y={baseline}
-          stroke="rgba(165,180,252,0.5)"
+          stroke="rgba(90,138,122,0.55)"
           strokeDasharray="4 4"
           label={{
             value: `Baseline ${baseline}`,
-            fill: "#a5b4fc",
+            fill: "#5a8a7a",
             fontSize: 10,
             position: "insideTopRight",
           }}
         />
         <ReferenceLine
           y={baseline * 0.85}
-          stroke="rgba(251,113,133,0.4)"
+          stroke="rgba(232,85,58,0.45)"
           strokeDasharray="2 4"
         />
         <Line
           type="monotone"
           dataKey="score"
-          stroke="#a5b4fc"
+          stroke="#5a8a7a"
           strokeWidth={2}
-          dot={{ r: 3, fill: "#a5b4fc", stroke: c.dotStroke, strokeWidth: 1 }}
+          dot={{ r: 3, fill: "#5a8a7a", stroke: c.dotStroke, strokeWidth: 1 }}
           activeDot={{ r: 5 }}
         />
       </LineChart>

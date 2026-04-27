@@ -13,16 +13,27 @@ export function EmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="panel flex flex-col items-center justify-center text-center px-6 py-12">
-      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 dark:border-white/[0.06] bg-zinc-100 dark:bg-white/[0.02] text-zinc-400 dark:text-zinc-500">
+    <div
+      className="card flex flex-col items-center justify-center px-6 py-14 text-center"
+    >
+      <div
+        className="flex h-10 w-10 items-center justify-center rounded-full"
+        style={{ background: "var(--bg-sunken)", border: "1px solid var(--border)", color: "var(--fg-subtle)" }}
+      >
         <Icon className="h-4 w-4" />
       </div>
-      <h3 className="mt-3 text-sm font-semibold text-zinc-800 dark:text-zinc-100">{title}</h3>
+      <h3
+        className="mt-3 text-[18px] font-semibold leading-snug"
+        style={{ color: "var(--fg)" }}
+      >
+        {title}
+      </h3>
       {description && (
-        <p className="mt-1 max-w-sm text-xs text-zinc-500">{description}</p>
+        <p className="mt-1 max-w-sm text-[13px]" style={{ color: "var(--fg-muted)" }}>
+          {description}
+        </p>
       )}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );
 }
-

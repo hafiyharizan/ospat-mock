@@ -118,9 +118,9 @@ export function getEmployeeDetail(id: string): EmployeeDetail | null {
   const latest = recent[recent.length - 1];
   const declines = countConsecutiveDeclines(recent.map((a) => a.readinessScore));
   const insight = latest.status === "Fail"
-    ? `Fail status triggered by fatigue risk ${latest.metrics.fatigueRisk} and AI drift z-score ${latest.anomalyZ.toFixed(2)}.`
+    ? `Flag state triggered by fatigue risk ${latest.metrics.fatigueRisk} and AI drift z-score ${latest.anomalyZ.toFixed(2)}.`
     : latest.status === "Review"
-      ? `Review status: readiness ${latest.readinessScore.toFixed(1)} with emerging deviation on reaction and focus.`
+      ? `Retest state: readiness ${latest.readinessScore.toFixed(1)} with emerging deviation on reaction and focus.`
       : `Pass status with stable readiness trend. Baseline deviation ${latest.overallDeviationPct.toFixed(1)}%.`;
 
   return { employee, site, recent, latest, consecutiveDeclines: declines, insight };

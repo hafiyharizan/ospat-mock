@@ -17,27 +17,19 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: "auto",
-  resolvedTheme: "dark",
+  theme: "light",
+  resolvedTheme: "light",
   setTheme: () => {},
 });
 
 const STORAGE_KEY = "ospat-theme";
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeMode>("auto");
-  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("dark");
+  const [theme, setThemeState] = useState<ThemeMode>("light");
+  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
 
-  // Read saved preference on mount
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY) as ThemeMode | null;
-      if (saved === "light" || saved === "dark" || saved === "auto") {
-        setThemeState(saved);
-      }
-    } catch (err) {
-      console.warn("[ThemeProvider] Could not read theme from localStorage:", err);
-    }
+    document.documentElement.classList.remove("dark");
   }, []);
 
   // Apply theme whenever `theme` changes
