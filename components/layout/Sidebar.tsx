@@ -7,6 +7,7 @@ import {
   ClipboardCheck,
   Download,
   LayoutDashboard,
+  LogOut,
   Settings,
   Users,
 } from "lucide-react";
@@ -103,7 +104,7 @@ export function Sidebar() {
 
       {/* User footer */}
       <div
-        className="flex items-center gap-2.5 px-3.5 py-3"
+        className="flex items-center gap-2 px-3.5 py-3"
         style={{ borderTop: "1px solid var(--border-faint)" }}
       >
         <div
@@ -120,6 +121,19 @@ export function Sidebar() {
             Operator · Pilbara
           </span>
         </div>
+        <Link
+          href="/"
+          aria-label="Log out"
+          title="Log out"
+          className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md transition-colors"
+          style={{
+            color: "var(--fg-muted)",
+            border: "1px solid var(--border)",
+            background: "var(--bg-elev)",
+          }}
+        >
+          <LogOut className="h-3.5 w-3.5" />
+        </Link>
       </div>
     </aside>
   );

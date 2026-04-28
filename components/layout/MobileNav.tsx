@@ -9,6 +9,7 @@ import {
   ClipboardCheck,
   Download,
   LayoutDashboard,
+  LogOut,
   Menu,
   Plus,
   Settings,
@@ -145,6 +146,37 @@ export function MobileNav() {
               Appearance
             </div>
             <ThemeToggle />
+          </div>
+          <div
+            className="flex items-center gap-2.5 pt-3"
+            style={{ borderTop: "1px solid var(--border-faint)" }}
+          >
+            <div
+              className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-semibold"
+              style={{ background: "var(--permaconn-green-soft)", color: "var(--accent)" }}
+            >
+              RC
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col leading-none">
+              <span className="text-[12.5px] font-medium truncate" style={{ color: "var(--fg)" }}>
+                Reg Cooper
+              </span>
+              <span className="text-[11px]" style={{ color: "var(--fg-subtle)" }}>
+                Operator · Pilbara
+              </span>
+            </div>
+            <Link
+              href="/"
+              className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-[12.5px] font-medium"
+              style={{
+                color: "var(--fg)",
+                border: "1px solid var(--border-strong)",
+                background: "var(--bg-elev)",
+              }}
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              Log out
+            </Link>
           </div>
         </div>
       </aside>

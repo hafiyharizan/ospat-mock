@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, LogOut } from "lucide-react";
 
 type Stage = "pre" | "test" | "result";
 
@@ -552,10 +552,10 @@ export function WorkerCompanion() {
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
-        {/* Back to role selector */}
+        {/* Back to role selector + log out */}
         <div
-          className="absolute left-4 top-4 z-20"
-          style={{ display: stage === "test" ? "none" : "block" }}
+          className="absolute inset-x-4 top-4 z-20 flex items-center justify-between"
+          style={{ display: stage === "test" ? "none" : "flex" }}
         >
           <Link
             href="/"
@@ -564,6 +564,19 @@ export function WorkerCompanion() {
           >
             <ArrowLeft className="h-3 w-3" />
             roles
+          </Link>
+          <Link
+            href="/"
+            aria-label="Log out"
+            className="inline-flex h-7 items-center gap-1.5 rounded-md px-2.5 text-[11px] font-medium"
+            style={{
+              color: "var(--fg-muted)",
+              border: "1px solid var(--border)",
+              background: "var(--bg-elev)",
+            }}
+          >
+            <LogOut className="h-3 w-3" />
+            Log out
           </Link>
         </div>
 
