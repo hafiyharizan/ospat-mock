@@ -231,7 +231,7 @@ export function LiveDashboard({ kpis }: Props) {
       <div className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-6">
 
         {/* KPI row */}
-        <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+        <div className="grid shrink-0 grid-cols-2 gap-3 xl:grid-cols-4">
           {kpiCards.map((card) => (
             <div key={card.label} className="card-padded" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               <div className="text-[12.5px] font-medium" style={{ color: "var(--fg-muted)" }}>
@@ -268,7 +268,7 @@ export function LiveDashboard({ kpis }: Props) {
         </div>
 
         {/* Wave panel */}
-        <div className="card overflow-hidden">
+        <div className="card shrink-0 overflow-hidden">
           <div
             className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:px-5"
             style={{ borderBottom: "1px solid var(--border-faint)" }}
@@ -300,7 +300,7 @@ export function LiveDashboard({ kpis }: Props) {
         </div>
 
         {/* Needs attention table */}
-        <div className="card flex flex-col overflow-hidden">
+        <div className="card flex shrink-0 flex-col overflow-hidden">
           <div
             className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:px-5"
             style={{ borderBottom: "1px solid var(--border-faint)" }}
