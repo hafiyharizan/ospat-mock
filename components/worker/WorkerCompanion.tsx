@@ -543,11 +543,13 @@ export function WorkerCompanion() {
       style={{ background: "var(--bg)" }}
     >
       <div
-        className="relative flex min-h-dvh w-full max-w-[390px] flex-col overflow-hidden sm:max-h-[calc(100dvh-48px)] sm:min-h-[720px] sm:rounded-[24px]"
+        className="relative flex min-h-dvh w-full flex-col overflow-hidden sm:max-h-[calc(100dvh-48px)] sm:min-h-[720px] sm:max-w-[390px] sm:rounded-[24px]"
         style={{
           background: "var(--bg)",
           border: "1px solid var(--border)",
           boxShadow: "var(--shadow-md)",
+          paddingTop: "env(safe-area-inset-top)",
+          paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
         {/* Back to role selector */}

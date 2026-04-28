@@ -64,8 +64,7 @@ export function Topbar() {
       className="flex h-14 flex-shrink-0 items-center gap-2 px-3 sm:gap-4 sm:px-6"
       style={{
         borderBottom: "1px solid var(--border)",
-        background: "color-mix(in oklch, var(--bg) 80%, transparent)",
-        backdropFilter: "blur(12px)",
+        background: "var(--bg)",
         position: "sticky",
         top: 0,
         zIndex: 30,
