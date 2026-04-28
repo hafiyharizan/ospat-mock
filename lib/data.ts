@@ -1,5 +1,5 @@
 import { generateAll } from "./generate";
-import { countConsecutiveDeclines, reasonText, suggestedActionText } from "./risk";
+import { countConsecutiveDeclines, flaggedMetricReasons, reasonText, readinessScore, suggestedActionText } from "./risk";
 import type { Assessment, DashboardKpis, Employee, EmployeeDetail, FlaggedCase, ShiftType, Site, SiteSummary } from "./types";
 
 const dataset = generateAll();
@@ -107,7 +107,7 @@ export function getSiteSummaries(): SiteSummary[] {
       return slice.length ? Number((slice.reduce((s, a) => s + a.readinessScore, 0) / slice.length).toFixed(1)) : 0;
     });
 
-    return { siteId: site.id, siteName: site.name, region: site.region, type: site.type, assessments: today.length, flagged, avgReadiness: Number(avgReadiness.toFixed(1)), highestRiskShift, trend14d: Number((p14 === 0 ? 0 : ((a14 - p14) / p14) * 100).toFixed(1)), recentScores };
+    return { siteId: site.id, siteName: site.name, region: site.region, type: site.type, latitude: site.latitude, longitude: site.longitude, assessments: today.length, flagged, avgReadiness: Number(avgReadiness.toFixed(1)), highestRiskShift, trend14d: Number((p14 === 0 ? 0 : ((a14 - p14) / p14) * 100).toFixed(1)), recentScores };
   });
 }
 
@@ -117,11 +117,12 @@ export function getEmployeeDetail(id: string): EmployeeDetail | null {
   const recent = dataset.assessments.filter((a) => a.employeeId === id).slice().sort((a, b) => (a.timestampISO < b.timestampISO ? -1 : 1));
   const latest = recent[recent.length - 1];
   const declines = countConsecutiveDeclines(recent.map((a) => a.readinessScore));
+  const latestMetricReasons = flaggedMetricReasons(latest.metrics, employee.baseline);
   const insight = latest.status === "Fail"
-    ? `Flag state triggered by fatigue risk ${latest.metrics.fatigueRisk} and AI drift z-score ${latest.anomalyZ.toFixed(2)}.`
+    ? `Flag state: ${latestMetricReasons[0] ?? "readiness drift"} against ${employee.name.split(" ")[0]}'s own baseline.`
     : latest.status === "Review"
-      ? `Retest state: readiness ${latest.readinessScore.toFixed(1)} with emerging deviation on reaction and focus.`
-      : `Pass status with stable readiness trend. Baseline deviation ${latest.overallDeviationPct.toFixed(1)}%.`;
+      ? `Retest state: borderline drift against ${employee.name.split(" ")[0]}'s personal baseline.`
+      : `Pass status with stable personal-baseline trend.`;
 
   return { employee, site, recent, latest, consecutiveDeclines: declines, insight };
 }
@@ -131,7 +132,16 @@ export function getFlaggedCases(): FlaggedCase[] {
   return today.map((a) => {
     const employee = getEmployeeById(a.employeeId)!;
     const site = getSiteById(a.siteId)!;
-    return { assessment: a, employee, site, reason: reasonText(a.status, a.readinessScore, a.anomalyZ), suggestedAction: suggestedActionText(a.status) };
+    const metricReasons = flaggedMetricReasons(a.metrics, employee.baseline);
+    const baselineReadiness = readinessScore(employee.baseline);
+    return {
+      assessment: a,
+      employee,
+      site,
+      reason: reasonText(a.status, a.readinessScore, baselineReadiness, metricReasons),
+      metricReasons,
+      suggestedAction: suggestedActionText(a.status),
+    };
   }).sort((a, b) => (a.assessment.status === "Fail" ? -1 : 1));
 }
 

@@ -9,6 +9,8 @@ export interface Site {
   name: string;
   region: string;
   type: string;
+  latitude: number;
+  longitude: number;
 }
 
 export interface BaselineMetrics {
@@ -60,6 +62,8 @@ export interface SiteSummary {
   siteName: string;
   region: string;
   type: string;
+  latitude: number;
+  longitude: number;
   assessments: number;
   flagged: number;
   avgReadiness: number;
@@ -82,5 +86,6 @@ export interface FlaggedCase {
   employee: Employee;
   site: Site;
   reason: string;
+  metricReasons: string[];
   suggestedAction: string;
 }

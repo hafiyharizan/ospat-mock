@@ -6,10 +6,10 @@ const SEED = 20260426;
 const TODAY = new Date("2026-04-26T00:00:00Z");
 
 const SITES: Site[] = [
-  { id: "site-mine-a", name: "Mine Site A", region: "Pilbara, WA", type: "Open-cut mine" },
-  { id: "site-transport-b", name: "Transport Depot B", region: "Hunter Valley, NSW", type: "Logistics depot" },
-  { id: "site-construction-c", name: "Construction Zone C", region: "Brisbane, QLD", type: "Civil construction" },
-  { id: "site-plant-d", name: "Industrial Plant D", region: "Gladstone, QLD", type: "Processing plant" },
+  { id: "site-mine-a", name: "Mine Site A", region: "Pilbara, WA", type: "Open-cut mine", latitude: -22.69, longitude: 117.79 },
+  { id: "site-transport-b", name: "Transport Depot B", region: "Hunter Valley, NSW", type: "Logistics depot", latitude: -32.56, longitude: 151.17 },
+  { id: "site-construction-c", name: "Construction Zone C", region: "Brisbane, QLD", type: "Civil construction", latitude: -27.47, longitude: 153.03 },
+  { id: "site-plant-d", name: "Industrial Plant D", region: "Gladstone, QLD", type: "Processing plant", latitude: -23.85, longitude: 151.26 },
 ];
 
 const FIRST_NAMES = ["Jordan","Riley","Avery","Casey","Hayden","Morgan","Quinn","Reese","Sasha","Devon","Elliot","Frankie","Harper","Indie","Jules","Kai","Logan","Marlowe","Noor","Oakley","Parker","Remy","Sky","Tatum","Umi","Vale","Wren","Xen","Yael","Zane","Aria","Bowen","Cleo","Dane","Esme","Finn","Greta","Huxley","Iris","Jin"];
@@ -94,7 +94,7 @@ function buildAssessments(rnd: () => number, employees: Employee[]): Assessment[
       const mean = rolling.length ? rolling.reduce((s, x) => s + x, 0) / rolling.length : readiness;
       const std = rolling.length > 2 ? Math.sqrt(rolling.reduce((s, x) => s + (x - mean) ** 2, 0) / rolling.length) : 6;
       const anomalyZ = Number(zScore(readiness, mean, std).toFixed(2));
-      const status = classifyStatus(readiness, metrics.fatigueRisk, anomalyZ);
+      const status = classifyStatus(readiness, metrics.fatigueRisk, anomalyZ, readinessScore(emp.baseline));
 
       out.push({
         id: `a-${emp.id}-${i}`,

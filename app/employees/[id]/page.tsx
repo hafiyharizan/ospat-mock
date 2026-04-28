@@ -6,6 +6,7 @@ import { ChartCard } from "@/components/charts/ChartCard";
 import { EmployeeScoreChart } from "@/components/charts/EmployeeScoreChart";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { formatDateTime } from "@/lib/format";
+import { readinessScore } from "@/lib/risk";
 import type { AssessmentStatus } from "@/lib/types";
 
 export function generateStaticParams() {
@@ -26,12 +27,13 @@ export default async function EmployeeDetailPage({
     score: a.readinessScore,
     label: a.timestampISO.slice(5, 10),
   }));
+  const readinessBaseline = readinessScore(detail.employee.baseline);
 
   const dotColor = (status: AssessmentStatus) =>
     status === "Pass" ? "var(--success)" : status === "Review" ? "var(--warning)" : "var(--danger)";
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       <Link
         href="/feed"
         className="mb-4 inline-flex items-center gap-1.5 text-[12px] transition-colors"
@@ -44,16 +46,16 @@ export default async function EmployeeDetailPage({
       {/* Header card */}
       <div className="card-padded mb-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex items-start gap-4">
+          <div className="flex min-w-0 items-start gap-3 sm:gap-4">
             <div
               className="flex h-12 w-12 items-center justify-center rounded-lg flex-shrink-0"
               style={{ background: "var(--bg-sunken)", border: "1px solid var(--border)" }}
             >
               <User className="h-5 w-5" style={{ color: "var(--fg-subtle)" }} />
             </div>
-            <div>
+            <div className="min-w-0">
               <h1
-                className="text-[26px] font-semibold leading-tight"
+                className="truncate text-[24px] font-semibold leading-tight sm:text-[26px]"
                 style={{ color: "var(--fg)", letterSpacing: "-0.016em" }}
               >
                 {detail.employee.name}
@@ -73,12 +75,12 @@ export default async function EmployeeDetailPage({
       </div>
 
       {/* KPI grid */}
-      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4 mb-4">
+      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[
           { label: "Readiness", value: detail.latest.readinessScore.toFixed(1) },
+          { label: "Personal baseline", value: readinessBaseline.toFixed(1) },
           { label: "Reaction (ms)", value: detail.latest.metrics.reactionTimeMs },
-          { label: "Focus", value: detail.latest.metrics.focusScore },
-          { label: "Fatigue risk", value: detail.latest.metrics.fatigueRisk },
+          { label: "Deviation", value: `${detail.latest.overallDeviationPct.toFixed(1)}%` },
         ].map(({ label, value }) => (
           <div key={label} className="card-padded flex flex-col gap-2">
             <div className="text-[12px] font-medium" style={{ color: "var(--fg-muted)" }}>{label}</div>
@@ -98,8 +100,8 @@ export default async function EmployeeDetailPage({
       {/* Chart + timeline */}
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <ChartCard title="Readiness history" subtitle="Last 20 check-ins">
-            <EmployeeScoreChart data={chartData} baseline={80} />
+          <ChartCard title="Personal readiness history" subtitle="Last 20 check-ins vs this worker's own baseline">
+            <EmployeeScoreChart data={chartData} baseline={readinessBaseline} />
           </ChartCard>
         </div>
 

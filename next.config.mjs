@@ -1,8 +1,9 @@
 /** @type {import('next').NextConfig} */
+const isProd = process.env.NODE_ENV === "production";
+
 const nextConfig = {
   reactStrictMode: true,
-  output: "export",
-  basePath: "/ospat-mock",
+  ...(isProd ? { output: "export", basePath: "/ospat-mock" } : {}),
   images: { unoptimized: true },
 };
 

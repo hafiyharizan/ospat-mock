@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import clsx from "clsx";
 import { Check, ClipboardCheck, RotateCcw } from "lucide-react";
 import { useReviewStore, useHasHydrated } from "@/store/reviewStore";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -15,7 +14,7 @@ export interface ReviewCaseProps {
   siteName: string; shift: ShiftType; timestampISO: string;
   readinessScore: number; reactionTimeMs: number; focusScore: number;
   fatigueRisk: number; coordinationScore: number; deviationPct: number;
-  status: AssessmentStatus; reason: string; suggestedAction: string; anomalyZ: number;
+  status: AssessmentStatus; reason: string; metricReasons: string[]; suggestedAction: string; anomalyZ: number;
 }
 
 type Filter = "open" | "in-progress" | "all";
@@ -25,6 +24,90 @@ const FILTERS: { key: Filter; label: string }[] = [
   { key: "in-progress", label: "In progress" },
   { key: "all",         label: "All" },
 ];
+
+function AiPatternsPanel({ cases }: { cases: ReviewCaseProps[] }) {
+  const flagCases = cases.filter((item) => item.status === "Fail");
+  const retestCases = cases.filter((item) => item.status === "Review");
+  const crewPattern = Math.max(3, Math.min(8, flagCases.length));
+  const projected = Math.max(12, retestCases.length + flagCases.length + 7);
+  const driftCase = cases.find((item) =>
+    item.metricReasons.some((reason) => reason.toLowerCase().includes("reaction time")),
+  ) ?? cases[0];
+  const recoveryName = "Liam Romero";
+
+  const patterns = [
+    {
+      label: "DRIFT",
+      tone: "warn",
+      text: driftCase
+        ? `${driftCase.employeeName.split(" ")[0][0]}. ${driftCase.employeeName.split(" ").slice(1).join(" ")} below personal mean across repeated screens.`
+        : "Repeated personal-baseline drift detected across recent screens.",
+      meta: driftCase ? `${driftCase.employeeId} · 92% conf` : "rolling baseline · 88% conf",
+    },
+    {
+      label: "CLUSTER",
+      tone: "err",
+      text: `${crewPattern} workers on Crew B testing below personal band on Monday mornings.`,
+      meta: "Pilbara · 92% conf",
+    },
+    {
+      label: "RECOVERY",
+      tone: "ok",
+      text: `${recoveryName} back in personal range after 14 days of intervention.`,
+      meta: "closes case #C-2210",
+    },
+    {
+      label: "PREDICT",
+      tone: "warn",
+      text: `${projected} workers likely below band tomorrow based on rolling fatigue signal.`,
+      meta: "next 24h · 78% conf",
+    },
+  ];
+
+  return (
+    <aside className="flex flex-col gap-3 lg:w-[320px] lg:flex-shrink-0">
+      <div className="flex items-center justify-between">
+        <span className="eyebrow">AI patterns</span>
+        <span className="badge badge-info">beta</span>
+      </div>
+
+      <h2 className="text-[18px] font-semibold leading-snug" style={{ color: "var(--fg)" }}>
+        What the model sees this week
+      </h2>
+
+      <div className="grid gap-3">
+        {patterns.map((pattern) => (
+          <div key={pattern.label} className="card" style={{ padding: "14px 16px" }}>
+            <div className="mb-2">
+              <span className={`badge badge-${pattern.tone}`}>{pattern.label}</span>
+            </div>
+            <p className="text-[13px] leading-snug" style={{ color: "var(--fg)" }}>
+              {pattern.text}
+            </p>
+            <p className="mt-2 font-mono text-[11px]" style={{ color: "var(--fg-subtle)" }}>
+              {pattern.meta}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div className="card" style={{ padding: "14px 16px" }}>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <span className="badge badge-info">AI assist</span>
+          <span className="font-mono text-[10px]" style={{ color: "var(--fg-subtle)" }}>
+            free-tier demo
+          </span>
+        </div>
+        <p className="text-[12.5px] leading-relaxed" style={{ color: "var(--fg-muted)" }}>
+          Use Gemini Flash free tier or a small OpenRouter free model to turn already-calculated Retest/Flag signals into a supervisor handover summary.
+        </p>
+        <p className="mt-2 font-mono text-[10.5px]" style={{ color: "var(--fg-subtle)" }}>
+          Rules stay source of truth · deterministic fallback if no API key
+        </p>
+      </div>
+    </aside>
+  );
+}
 
 export function ReviewQueue({ cases }: { cases: ReviewCaseProps[] }) {
   const [filter, setFilter] = useState<Filter>("open");
@@ -43,35 +126,36 @@ export function ReviewQueue({ cases }: { cases: ReviewCaseProps[] }) {
   });
 
   if (!visible.length)
-    return <EmptyState title="No flagged cases" description="All clear for now." />;
+    return <EmptyState title="No Retest or Flag results" description="All visible workers are currently inside their personal baseline range." />;
 
   return (
-    <div>
-      {/* Filter pills */}
-      <div className="mb-5 flex gap-2">
-        {FILTERS.map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => setFilter(key)}
-            className="btn-secondary h-8 px-3 text-[12px]"
-            style={{
-              background: filter === key ? "var(--selected-bg)" : undefined,
-              color: filter === key ? "var(--fg)" : "var(--fg-muted)",
-            }}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="min-w-0">
+        {/* Filter pills */}
+        <div className="mb-5 flex flex-wrap gap-2">
+          {FILTERS.map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setFilter(key)}
+              className="btn-secondary h-8 px-3 text-[12px]"
+              style={{
+                background: filter === key ? "var(--selected-bg)" : undefined,
+                color: filter === key ? "var(--fg)" : "var(--fg-muted)",
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
 
-      <ul className="flex flex-col gap-3">
-        {visible.map((c) => {
-          const status = items[c.assessmentId]?.status ?? "open";
-          return (
-            <li key={c.assessmentId} className="card-padded">
+        <ul className="flex flex-col gap-3">
+          {visible.map((c) => {
+            const status = items[c.assessmentId]?.status ?? "open";
+            return (
+              <li key={c.assessmentId} className="card-padded">
               <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-3">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                     <Link
                       href={`/employees/${c.employeeId}`}
                       className="text-[15px] font-semibold hover:underline"
@@ -86,7 +170,7 @@ export function ReviewQueue({ cases }: { cases: ReviewCaseProps[] }) {
                   </div>
                 </div>
 
-                <div className="text-right">
+                <div className="text-left sm:text-right">
                   <div className="eyebrow mb-1">Score</div>
                   <div
                     className="font-mono text-[28px] font-semibold leading-none"
@@ -103,11 +187,41 @@ export function ReviewQueue({ cases }: { cases: ReviewCaseProps[] }) {
               <p className="mt-3 text-[13px] leading-relaxed" style={{ color: "var(--fg-muted)" }}>
                 {c.reason}
               </p>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                {[
+                  { label: "Reaction time", value: `${c.reactionTimeMs} ms` },
+                  { label: "Accuracy", value: c.focusScore },
+                  { label: "Consistency", value: c.coordinationScore },
+                  { label: "Fatigue-risk score", value: c.fatigueRisk },
+                ].map((metric) => (
+                  <div
+                    key={metric.label}
+                    className="rounded-md px-3 py-2"
+                    style={{ background: "var(--bg-sunken)", border: "1px solid var(--border)" }}
+                  >
+                    <div className="font-mono text-[10px] uppercase tracking-[0.04em]" style={{ color: "var(--fg-subtle)" }}>
+                      {metric.label}
+                    </div>
+                    <div className="mt-1 font-mono text-[14px] font-semibold" style={{ color: "var(--fg)" }}>
+                      {metric.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {c.metricReasons.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {c.metricReasons.map((reason) => (
+                    <span key={reason} className={`badge ${c.status === "Fail" ? "badge-err" : "badge-warn"}`}>
+                      {reason}
+                    </span>
+                  ))}
+                </div>
+              )}
               <p className="mt-1 text-[12px]" style={{ color: "var(--fg-subtle)" }}>
                 {c.suggestedAction}
               </p>
 
-              <div className="mt-4 flex gap-2">
+              <div className="mt-4 flex flex-wrap gap-2">
                 <button
                   onClick={() => acknowledge(c.assessmentId)}
                   disabled={status !== "open"}
@@ -126,17 +240,20 @@ export function ReviewQueue({ cases }: { cases: ReviewCaseProps[] }) {
                 {status !== "open" && (
                   <button
                     onClick={() => reset(c.assessmentId)}
-                    className="btn-ghost h-8 gap-1.5 text-[12px] ml-auto"
+                    className="btn-ghost h-8 gap-1.5 text-[12px] sm:ml-auto"
                   >
                     <RotateCcw className="h-3.5 w-3.5" />
                     Reset
                   </button>
                 )}
               </div>
-            </li>
-          );
-        })}
-      </ul>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      <AiPatternsPanel cases={cases} />
     </div>
   );
 }

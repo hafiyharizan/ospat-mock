@@ -1,10 +1,7 @@
 "use client";
 
 import { Monitor, Moon, Sun } from "lucide-react";
-import clsx from "clsx";
 import { useTheme, type ThemeMode } from "./ThemeProvider";
-
-const CYCLE: ThemeMode[] = ["auto", "light", "dark"];
 
 const ICONS = {
   light: Sun,
@@ -19,31 +16,44 @@ const LABELS = {
 } as const;
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-
-  const cycle = () => {
-    const idx = CYCLE.indexOf(theme);
-    setTheme(CYCLE[(idx + 1) % CYCLE.length]);
-  };
-
-  const Icon = ICONS[theme];
-  const label = LABELS[theme];
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  const modes: ThemeMode[] = ["light", "dark", "auto"];
 
   return (
-    <button
-      type="button"
-      onClick={cycle}
-      title={`Theme: ${label} — click to cycle`}
-      aria-label={`Current theme: ${label}. Click to cycle.`}
-      className={clsx(
-        "inline-flex items-center gap-1.5 h-9 rounded-lg border px-2.5 text-xs font-medium",
-        "transition-all duration-200 active:scale-[0.97]",
-        "border-zinc-200 bg-white/80 text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100",
-        "dark:border-white/[0.06] dark:bg-white/[0.02] dark:text-zinc-400 dark:hover:text-zinc-200 dark:hover:bg-white/[0.06]",
-      )}
+    <div
+      className="inline-flex h-8 items-center gap-0.5 rounded-lg border p-0.5 sm:h-9"
+      style={{
+        borderColor: "var(--border)",
+        background: "color-mix(in oklch, var(--bg-elev) 84%, transparent)",
+        color: "var(--fg-muted)",
+      }}
+      role="group"
+      aria-label={`Theme mode. Current mode: ${LABELS[theme]}. Resolved theme: ${resolvedTheme}.`}
     >
-      <Icon className="h-3.5 w-3.5 transition-transform duration-300" />
-      <span className="hidden sm:inline">{label}</span>
-    </button>
+      {modes.map((mode) => {
+        const Icon = ICONS[mode];
+        const active = theme === mode;
+
+        return (
+          <button
+            key={mode}
+            type="button"
+            onClick={() => setTheme(mode)}
+            title={`Use ${LABELS[mode]} mode`}
+            aria-label={`Use ${LABELS[mode]} mode`}
+            aria-pressed={active}
+            className="inline-flex h-6 min-w-6 items-center justify-center gap-1 rounded-md px-1.5 text-[11.5px] font-medium transition-all duration-150 active:scale-[0.97] sm:h-7 sm:min-w-7 sm:px-2"
+            style={{
+              background: active ? "var(--selected-bg)" : "transparent",
+              color: active ? "var(--fg)" : "var(--fg-subtle)",
+              boxShadow: active ? "var(--shadow-xs)" : "none",
+            }}
+          >
+            <Icon className="h-3.5 w-3.5" />
+            <span className="hidden xl:inline">{LABELS[mode]}</span>
+          </button>
+        );
+      })}
+    </div>
   );
 }

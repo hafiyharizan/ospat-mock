@@ -19,6 +19,24 @@ const WORKER = {
   history: [76,78,80,75,79,82,77,73,70,68,71,66,64,62,58,60,55,53,54,52],
 };
 
+const TEST_FACTORS = [
+  { label: "Reaction time", detail: "response speed" },
+  { label: "Hand-eye coordination", detail: "cursor control" },
+  { label: "Cognitive alertness", detail: "tracking consistency" },
+];
+
+const RESULT_FACTORS = [
+  { label: "Reaction time", value: "342 ms", detail: "within personal range", tone: "ok" },
+  { label: "Hand-eye coordination", value: "52", detail: "below usual band", tone: "err" },
+  { label: "Cognitive alertness", value: "Watch", detail: "sustained drift detected", tone: "warn" },
+];
+
+function toneColor(tone: string) {
+  if (tone === "err") return "var(--danger)";
+  if (tone === "warn") return "var(--warning)";
+  return "var(--success)";
+}
+
 /* ─── Pre-shift sparkline ─────────────────────────────────── */
 function Sparkline() {
   const W = 260, H = 60, pad = 4;
@@ -73,8 +91,25 @@ function PreShiftScreen({ onStart }: { onStart: () => void }) {
         Morning, {WORKER.name.split(" ")[0]}.
       </h1>
       <p className="mt-2 text-[13.5px] leading-relaxed" style={{ color: "var(--fg-muted)" }}>
-        Run your 60-second check-in before shift starts.
+        Log in at the terminal and complete a 30-60 second impairment screen before shift starts.
       </p>
+
+      <div className="mt-4 grid gap-2">
+        {TEST_FACTORS.map((factor) => (
+          <div
+            key={factor.label}
+            className="flex items-center justify-between rounded-lg px-3 py-2"
+            style={{ background: "var(--bg-elev)", border: "1px solid var(--border)" }}
+          >
+            <span className="text-[12.5px] font-medium" style={{ color: "var(--fg)" }}>
+              {factor.label}
+            </span>
+            <span className="font-mono text-[10.5px] uppercase tracking-[0.04em]" style={{ color: "var(--fg-subtle)" }}>
+              {factor.detail}
+            </span>
+          </div>
+        ))}
+      </div>
 
       {/* Last 20 shifts card */}
       <div className="mt-5 rounded-xl p-4"
@@ -96,7 +131,7 @@ function PreShiftScreen({ onStart }: { onStart: () => void }) {
 
       <p className="mt-5 text-[13px] leading-relaxed" style={{ color: "var(--fg-muted)" }}>
         Hold the device flat. Follow the dot. Your supervisor sees the result,{" "}
-        <strong style={{ color: "var(--fg)" }}>not the score.</strong>
+        <strong style={{ color: "var(--fg)" }}>not a diagnosis.</strong>
       </p>
 
       <div className="mt-auto flex flex-col gap-3 pt-6">
@@ -137,12 +172,18 @@ function TestScreen({ onComplete }: { onComplete: () => void }) {
   const countdownRef     = useRef<HTMLSpanElement>(null);
   const rafRef           = useRef<number>(0);
   const elapsedRef       = useRef(0);
+  const lastUiTickRef    = useRef(-1);
   const doneRef          = useRef(false);
 
   const W = 320, H = 380;
   const CX = W / 2, CY = H * 0.52, R = 112;
   const DURATION = 60;
   const BAR_W = W - 48;
+  const progress = Math.min(1, elapsed / DURATION);
+  const difficultyLevel = Math.min(9, Math.max(4, Math.round(5 + progress * 4)));
+  const reactionMs = Math.round(308 + progress * 34);
+  const coordinationScore = Math.round(76 - progress * 15);
+  const alertness = progress > 0.54 ? "Watch" : "Stable";
 
   useEffect(() => {
     const start = performance.now();
@@ -207,8 +248,10 @@ function TestScreen({ onComplete }: { onComplete: () => void }) {
         countdownRef.current.textContent = `STAY ON TARGET · ${left}s LEFT`;
       }
 
-      /* React state only at 5fps for elapsed (drives progress display) */
-      if (Math.floor(e) !== Math.floor(elapsedRef.current - 0.016)) {
+      /* React state only at 5fps for small metric labels */
+      const uiTick = Math.floor(e * 5);
+      if (uiTick !== lastUiTickRef.current) {
+        lastUiTickRef.current = uiTick;
         setElapsed(e);
       }
 
@@ -228,15 +271,15 @@ function TestScreen({ onComplete }: { onComplete: () => void }) {
   }, [onComplete]);
 
   return (
-    <div className="flex flex-1 flex-col" style={{ background: "#0a0c0f", color: "#ececea" }}>
+    <div className="flex flex-1 flex-col" style={{ background: "var(--bg)", color: "var(--fg)" }}>
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4">
         <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.06em]"
-          style={{ color: "rgba(236,236,234,0.50)" }}>
-          TRACKING · DON&apos;T BLINK
+          style={{ color: "var(--fg-subtle)" }}>
+          Adaptive tracking · level {difficultyLevel}
         </span>
         <span ref={timerTextRef} className="font-mono text-[13px]"
-          style={{ color: "rgba(236,236,234,0.85)" }}>
+          style={{ color: "var(--fg-muted)" }}>
           00:00
         </span>
       </div>
@@ -252,13 +295,13 @@ function TestScreen({ onComplete }: { onComplete: () => void }) {
           {/* Grid circles */}
           {[R, R * 0.67, R * 0.33].map((r) => (
             <circle key={r} cx={CX} cy={CY} r={r}
-              stroke="rgba(255,255,255,0.07)" fill="none" />
+              stroke="var(--border)" fill="none" />
           ))}
 
           {/* Target crosshair */}
           {[-8, 8].map((dx) => (
             <line key={dx} x1={CX + dx - 4} y1={CY} x2={CX + dx + 4} y2={CY}
-              stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+              stroke="var(--border-strong)" strokeWidth="1" />
           ))}
 
           {/* Trail */}
@@ -267,7 +310,7 @@ function TestScreen({ onComplete }: { onComplete: () => void }) {
 
           {/* Connect line */}
           <line ref={connLineRef} x1={CX} y1={CY} x2={CX} y2={CY}
-            stroke="white" strokeOpacity="0.18" strokeWidth="1" strokeDasharray="2 3" />
+            stroke="var(--fg)" strokeOpacity="0.18" strokeWidth="1" strokeDasharray="2 3" />
 
           {/* Target ring */}
           <circle ref={targetCircleRef} cx={CX} cy={CY} r={16}
@@ -278,33 +321,33 @@ function TestScreen({ onComplete }: { onComplete: () => void }) {
 
           {/* User dot glow */}
           <circle cx={CX} cy={CY} r={11}
-            fill="white" opacity="0.10" />
+            fill="var(--accent)" opacity="0.12" />
           {/* User dot */}
           <circle ref={userCircleRef} cx={CX} cy={CY} r={5}
-            fill="white" />
+            fill="var(--fg)" />
         </svg>
       </div>
 
       {/* Metrics */}
       <div className="grid grid-cols-3 gap-4 px-6 pb-4">
         {[
-          ["MEAN ERROR", "4.8", "px"],
-          ["REACTION",   "342", "ms"],
-          ["DIFFICULTY", "L7",  "", true],
-        ].map(([label, val, unit, warn]) => (
+          ["REACTION", `${reactionMs}`, "ms", "ok"],
+          ["COORDINATION", `${coordinationScore}`, "score", progress > 0.5 ? "warn" : "ok"],
+          ["ALERTNESS", alertness, "", progress > 0.54 ? "warn" : "ok"],
+        ].map(([label, val, unit, tone]) => (
           <div key={String(label)}>
             <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.06em]"
-              style={{ color: "rgba(236,236,234,0.45)" }}>
+              style={{ color: "var(--fg-subtle)" }}>
               {label}
             </div>
-            <div className="mt-1 font-mono text-[28px] font-semibold leading-none"
+            <div className="mt-1 font-mono text-[24px] font-semibold leading-none"
               style={{
-                color: warn ? "var(--warning)" : "#ececea",
+                color: tone === "warn" ? "var(--warning)" : "var(--fg)",
                 letterSpacing: "-0.01em",
               }}>
               {val}
               {unit && (
-                <span style={{ fontSize: 13, color: "rgba(236,236,234,0.45)", marginLeft: 2 }}>
+                <span style={{ fontSize: 11, color: "var(--fg-subtle)", marginLeft: 2 }}>
                   {unit}
                 </span>
               )}
@@ -316,7 +359,7 @@ function TestScreen({ onComplete }: { onComplete: () => void }) {
       {/* Progress bar */}
       <div className="px-6 pb-6">
         <div className="mb-2 h-1 overflow-hidden rounded-full"
-          style={{ background: "rgba(255,255,255,0.10)" }}>
+          style={{ background: "var(--border)" }}>
           <svg width="100%" height={4}>
             <rect ref={progressBarRef} x={0} y={0} width={0} height={4}
               fill="var(--accent)" rx={2} />
@@ -325,7 +368,7 @@ function TestScreen({ onComplete }: { onComplete: () => void }) {
         <div className="text-center">
           <span ref={countdownRef}
             className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.06em]"
-            style={{ color: "rgba(236,236,234,0.45)" }}>
+            style={{ color: "var(--fg-subtle)" }}>
             STAY ON TARGET · 60s LEFT
           </span>
         </div>
@@ -396,6 +439,30 @@ function ResultScreen({ onRetry }: { onRetry: () => void }) {
           <strong style={{ color: "var(--fg)" }}>your own history only</strong> — never
           to teammates or population averages.
         </div>
+        <div className="mt-3 grid gap-2">
+          {RESULT_FACTORS.map((factor) => (
+            <div
+              key={factor.label}
+              className="flex items-center justify-between gap-3 rounded-lg px-3 py-2"
+              style={{ background: "var(--bg-elev)", border: "1px solid var(--border)" }}
+            >
+              <div>
+                <div className="text-[12px] font-medium" style={{ color: "var(--fg)" }}>
+                  {factor.label}
+                </div>
+                <div className="font-mono text-[10.5px]" style={{ color: "var(--fg-subtle)" }}>
+                  {factor.detail}
+                </div>
+              </div>
+              <span
+                className="font-mono text-[13px] font-semibold"
+                style={{ color: toneColor(factor.tone) }}
+              >
+                {factor.value}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Supervisor routing */}
@@ -441,7 +508,7 @@ function ResultScreen({ onRetry }: { onRetry: () => void }) {
             cursor: "pointer",
           }}
         >
-          {belowBand ? "I&apos;m OK" : "Done"}
+          {belowBand ? "Acknowledge alert" : "Done"}
         </button>
         <button
           className="h-12 rounded-xl px-5 text-[14px] font-medium"
@@ -472,15 +539,15 @@ export function WorkerCompanion() {
   return (
     /* Outer: centers a phone-like frame on desktop, full-screen on mobile */
     <div
-      className="flex min-h-screen items-start justify-center"
-      style={{ background: "#0a0c0f" }}
+      className="flex min-h-dvh items-start justify-center sm:items-center sm:p-6"
+      style={{ background: "var(--bg)" }}
     >
       <div
-        className="relative flex w-full max-w-[390px] flex-col overflow-hidden"
+        className="relative flex min-h-dvh w-full max-w-[390px] flex-col overflow-hidden sm:max-h-[calc(100dvh-48px)] sm:min-h-[720px] sm:rounded-[24px]"
         style={{
-          minHeight: "100svh",
-          background: stage === "test" ? "#0a0c0f" : "var(--bg)",
-          /* phone frame on desktop */
+          background: "var(--bg)",
+          border: "1px solid var(--border)",
+          boxShadow: "var(--shadow-md)",
         }}
       >
         {/* Back to role selector */}

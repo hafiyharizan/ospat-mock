@@ -3,9 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Activity,
   Box,
-  BrainCircuit,
+  ClipboardCheck,
   Download,
   LayoutDashboard,
   Settings,
@@ -16,7 +15,7 @@ import clsx from "clsx";
 const NAV = [
   { href: "/live",    label: "Live",      icon: LayoutDashboard },
   { href: "/feed",    label: "People",    icon: Users },
-  { href: "/review",  label: "Patterns",  icon: BrainCircuit },
+  { href: "/review",  label: "Result",    icon: ClipboardCheck },
   { href: "/sites",   label: "Sites",     icon: Box },
   { href: "/reports", label: "Reports",   icon: Download },
   { href: "/settings",label: "Settings",  icon: Settings },
@@ -42,9 +41,9 @@ export function Sidebar() {
       >
         <div
           className="flex h-6 w-6 items-center justify-center rounded-md text-xs font-bold"
-          style={{ background: "var(--neutral-900)", color: "var(--white)" }}
+          style={{ background: "var(--accent)", color: "var(--white)" }}
         >
-          O
+          P
         </div>
         <div className="flex min-w-0 flex-1 flex-col leading-none">
           <span className="text-[13px] font-semibold" style={{ color: "var(--fg)" }}>
@@ -109,7 +108,7 @@ export function Sidebar() {
       >
         <div
           className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-semibold"
-          style={{ background: "var(--neutral-700)", color: "var(--white)" }}
+          style={{ background: "var(--permaconn-green-soft)", color: "var(--accent)" }}
         >
           RC
         </div>

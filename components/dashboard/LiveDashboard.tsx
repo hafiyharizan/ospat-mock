@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { DashboardKpis } from "@/lib/types";
+import { RESULT_THRESHOLDS } from "@/lib/risk";
 
 interface Props {
   kpis: DashboardKpis;
@@ -32,13 +33,6 @@ const PEOPLE = [
     signal: "Recovery · back in band", conf: 0.88,
     site: "Haul Rd 7", tone: "ok",
   },
-];
-
-const AI_SIGNALS = [
-  { tone: "err",  kicker: "CLUSTER",  text: "6 workers on Crew B testing below personal band on Monday mornings.", meta: "Pilbara · 92% conf" },
-  { tone: "warn", kicker: "PREDICT",  text: "23 workers projected below band tomorrow based on rolling fatigue signal.", meta: "next 24h · 78% conf" },
-  { tone: "ok",   kicker: "RECOVERY", text: "Liam Romero back in personal range after 14 days of intervention.", meta: "closes case #C-2210" },
-  { tone: "warn", kicker: "DRIFT",    text: "M. Tran below personal mean for 4 consecutive shifts. Recommend 1:1.", meta: "#W-2841 · 92% conf" },
 ];
 
 function toneColor(t: string) {
@@ -103,7 +97,7 @@ function WaveChart() {
   const times = ["05:30","05:45","06:00","06:15","06:30","06:45"];
 
   return (
-    <div style={{ position: "relative" }}>
+    <div className="relative">
       <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
         <defs>
           <linearGradient id="wfill" x1="0" y1="0" x2="0" y2="1">
@@ -135,11 +129,10 @@ function WaveChart() {
           </text>
         ))}
       </svg>
-      <div style={{
-        position: "absolute", left: "66%", top: 4,
-        fontFamily: "var(--font-mono)", fontSize: 10.5,
-        color: "var(--danger)", letterSpacing: "0.04em", textTransform: "uppercase",
-      }}>
+      <div
+        className="absolute top-1 hidden font-mono text-[10.5px] uppercase tracking-[0.04em] sm:block"
+        style={{ left: "66%", color: "var(--danger)" }}
+      >
         ↓ J. Okafor · 48 · flagged 06:38
       </div>
     </div>
@@ -148,6 +141,57 @@ function WaveChart() {
 
 function initials(name: string) {
   return name.split(" ").map((s) => s[0]).join("").slice(0, 2);
+}
+
+function ThresholdRuleCards() {
+  return (
+    <div className="flex flex-col gap-2.5">
+      {RESULT_THRESHOLDS.map((threshold) => (
+        <div
+          key={threshold.label}
+          className="card"
+          style={{ padding: "12px 14px" }}
+        >
+          <div className="mb-1.5">
+            <span className={`badge badge-${threshold.tone}`}>{threshold.label}</span>
+          </div>
+          <p className="text-[12.5px] leading-snug" style={{ color: "var(--fg)" }}>
+            {threshold.description}
+          </p>
+          <p className="mt-2 font-mono text-[10.5px]" style={{ color: "var(--fg-subtle)" }}>
+            {threshold.range}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function AiAssistCard() {
+  return (
+    <div className="card" style={{ padding: "12px 14px" }}>
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <span className="badge badge-info">AI assist</span>
+        <span className="font-mono text-[10px]" style={{ color: "var(--fg-subtle)" }}>
+          free-tier showcase
+        </span>
+      </div>
+      <h3 className="text-[13px] font-semibold" style={{ color: "var(--fg)" }}>
+        Supervisor handover brief
+      </h3>
+      <p className="mt-2 text-[12px] leading-relaxed" style={{ color: "var(--fg-muted)" }}>
+        Summarise only Retest/Flag cases, cite the baseline metric that moved, and suggest the next supervisor action. No diagnosis.
+      </p>
+      <div className="mt-3 rounded-md p-3" style={{ background: "var(--bg-sunken)", border: "1px solid var(--border)" }}>
+        <div className="font-mono text-[10px] uppercase tracking-[0.05em]" style={{ color: "var(--fg-subtle)" }}>
+          Suggested stack
+        </div>
+        <p className="mt-1 text-[12px] leading-relaxed" style={{ color: "var(--fg)" }}>
+          Gemini Flash free tier or a small OpenRouter free model, called from one server action with a deterministic rule fallback.
+        </p>
+      </div>
+    </div>
+  );
 }
 
 export function LiveDashboard({ kpis }: Props) {
@@ -184,7 +228,7 @@ export function LiveDashboard({ kpis }: Props) {
   return (
     <div className="flex h-full min-h-0" style={{ background: "var(--bg)" }}>
       {/* ── Main column */}
-      <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-6 min-w-0">
+      <div className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-6">
 
         {/* KPI row */}
         <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
@@ -226,16 +270,18 @@ export function LiveDashboard({ kpis }: Props) {
         {/* Wave panel */}
         <div className="card overflow-hidden">
           <div
-            className="flex items-center gap-3 px-5 py-3"
+            className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:px-5"
             style={{ borderBottom: "1px solid var(--border-faint)" }}
           >
-            <span className="text-[13.5px] font-semibold" style={{ color: "var(--fg)" }}>
-              Shift-start wave
-            </span>
-            <span className="font-mono text-[11.5px]" style={{ color: "var(--fg-subtle)" }}>
-              last 90 min · 14 sites
-            </span>
-            <div className="ml-auto flex gap-2">
+            <div className="min-w-0">
+              <span className="text-[13.5px] font-semibold" style={{ color: "var(--fg)" }}>
+                Shift-start wave
+              </span>
+              <span className="ml-2 font-mono text-[11.5px]" style={{ color: "var(--fg-subtle)" }}>
+                last 90 min · 14 sites
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2 sm:ml-auto">
               {[
                 { label: `${kpis.pass} pass`, tone: "ok" },
                 { label: `${kpis.review} retest`, tone: "warn" },
@@ -256,24 +302,86 @@ export function LiveDashboard({ kpis }: Props) {
         {/* Needs attention table */}
         <div className="card flex flex-col overflow-hidden">
           <div
-            className="flex items-center px-5 py-3"
+            className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:px-5"
             style={{ borderBottom: "1px solid var(--border-faint)" }}
           >
-            <span className="text-[13.5px] font-semibold" style={{ color: "var(--fg)" }}>
-              Needs attention
-            </span>
-            <span className="ml-3 font-mono text-[11.5px]" style={{ color: "var(--fg-subtle)" }}>
-              {PEOPLE.length} workers · sorted by AI confidence
-            </span>
-            <div className="ml-auto flex gap-2">
+            <div className="min-w-0">
+              <span className="text-[13.5px] font-semibold" style={{ color: "var(--fg)" }}>
+                Needs attention
+              </span>
+              <span className="ml-2 font-mono text-[11.5px]" style={{ color: "var(--fg-subtle)" }}>
+                {PEOPLE.length} workers · sorted by AI confidence
+              </span>
+            </div>
+            <div className="flex gap-2 sm:ml-auto">
               <button className="btn-ghost h-[26px] px-2.5 text-[12px]">Filter</button>
               <button className="btn-secondary h-[26px] px-2.5 text-[12px]">Export</button>
             </div>
           </div>
 
-          {/* Table head */}
+          {/* Mobile list */}
+          <div className="divide-y md:hidden" style={{ borderColor: "var(--border-faint)" }}>
+            {PEOPLE.map((p) => (
+              <div key={p.id} className="px-4 py-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <div
+                      className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md font-mono text-[11px] font-semibold"
+                      style={{
+                        background: "var(--bg-sunken)",
+                        border: "1px solid var(--border)",
+                        color: "var(--fg-muted)",
+                      }}
+                    >
+                      {initials(p.name)}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="truncate font-medium" style={{ color: "var(--fg)" }}>{p.name}</div>
+                      <div className="font-mono text-[11px]" style={{ color: "var(--fg-subtle)" }}>{p.id} · {p.site}</div>
+                    </div>
+                  </div>
+                  <span
+                    className="font-mono text-[24px] font-semibold leading-none"
+                    style={{
+                      color: p.tone === "err" ? "var(--danger)" : "var(--fg)",
+                      letterSpacing: "-0.01em",
+                      fontFeatureSettings: '"tnum"',
+                    }}
+                  >
+                    {p.score}
+                  </span>
+                </div>
+
+                <div className="mt-3">
+                  <Sparkline data={p.data} band={p.band} width={240} height={38} danger={p.tone === "err"} />
+                  <div className="mt-1 font-mono text-[10.5px]" style={{ color: "var(--fg-faint)" }}>
+                    personal band {p.band[0]}-{p.band[1]}
+                  </div>
+                </div>
+
+                <div className="mt-3 text-[12.5px] leading-snug" style={{ color: "var(--fg)" }}>
+                  {p.signal}
+                </div>
+
+                <div className="mt-3 flex items-center justify-between gap-3">
+                  <span className={`badge badge-${p.tone === "err" ? "err" : p.tone === "warn" ? "warn" : "ok"}`}>
+                    {(p.conf * 100).toFixed(0)}% confidence
+                  </span>
+                  <Link
+                    href={`/employees/${p.id.replace("#W-", "emp-")}`}
+                    className={p.tone === "err" ? "btn-primary" : "btn-secondary"}
+                    style={{ height: 28, padding: "0 12px", fontSize: 12 }}
+                  >
+                    {p.tone === "err" ? "Route" : "Open"}
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop table head */}
           <div
-            className="grid px-5 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.04em]"
+            className="hidden px-5 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.04em] md:grid"
             style={{
               gridTemplateColumns: "1.5fr 80px 160px 1.8fr 1fr 88px",
               gap: 12,
@@ -291,6 +399,7 @@ export function LiveDashboard({ kpis }: Props) {
           </div>
 
           {/* Rows */}
+          <div className="hidden md:block">
           {PEOPLE.map((p, i) => (
             <div
               key={p.id}
@@ -386,45 +495,28 @@ export function LiveDashboard({ kpis }: Props) {
               </div>
             </div>
           ))}
+          </div>
         </div>
       </div>
 
-      {/* ── Right rail: AI patterns */}
+      {/* ── Right rail: thresholds + AI assist */}
       <aside
         className="hidden xl:flex xl:w-80 xl:flex-shrink-0 xl:flex-col gap-3 overflow-y-auto p-5"
         style={{ borderLeft: "1px solid var(--border)", background: "var(--bg)" }}
       >
         <div className="flex items-center justify-between">
-          <span className="eyebrow">Patterns</span>
-          <span className="badge badge-info">beta</span>
+          <span className="eyebrow">Thresholds</span>
+          <span className="badge badge-info">personal baseline</span>
         </div>
 
         <h2
           className="text-[17px] font-semibold leading-snug"
           style={{ color: "var(--fg)", letterSpacing: "-0.012em" }}
         >
-          What the model sees this week
+          Pass, Retest, Flag rules
         </h2>
 
-        <div className="flex flex-col gap-2.5">
-          {AI_SIGNALS.map((sig, i) => (
-            <div
-              key={i}
-              className="card"
-              style={{ padding: "12px 14px" }}
-            >
-              <div className="mb-1.5">
-                <span className={`badge badge-${sig.tone}`}>{sig.kicker}</span>
-              </div>
-              <p className="text-[12.5px] leading-snug" style={{ color: "var(--fg)" }}>
-                {sig.text}
-              </p>
-              <p className="mt-2 font-mono text-[10.5px]" style={{ color: "var(--fg-subtle)" }}>
-                {sig.meta}
-              </p>
-            </div>
-          ))}
-        </div>
+        <ThresholdRuleCards />
 
         <div
           className="mt-auto text-[11px] leading-relaxed pt-3"
@@ -433,8 +525,10 @@ export function LiveDashboard({ kpis }: Props) {
             color: "var(--fg-subtle)",
           }}
         >
-          The model surfaces signals — never diagnoses cause. Decisions stay with supervisors, per OSPAT principle.
+          Results explain the metric that moved: reaction time, accuracy, consistency, or fatigue-risk score.
         </div>
+
+        <AiAssistCard />
       </aside>
     </div>
   );

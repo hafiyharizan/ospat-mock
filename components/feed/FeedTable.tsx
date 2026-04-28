@@ -62,15 +62,46 @@ export function FeedTable({ rows }: { rows: FeedRow[] }) {
         </div>
         <button
           onClick={handleExport}
-          className="ml-auto btn-secondary h-8 gap-1.5"
+          className="btn-secondary ml-auto h-8 w-full justify-center gap-1.5 sm:w-auto"
         >
           <Download className="h-3.5 w-3.5" />
           Export CSV
         </button>
       </div>
 
-      {/* table */}
-      <div className="overflow-x-auto">
+      {/* mobile list */}
+      <div className="divide-y md:hidden" style={{ borderColor: "var(--border-faint)" }}>
+        {filtered.map((r) => (
+          <Link
+            key={r.assessmentId}
+            href={`/employees/${r.employeeId}`}
+            className="block px-4 py-3 transition-colors"
+            style={{ color: "var(--fg)" }}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="truncate text-[13.5px] font-semibold">{r.employeeName}</div>
+                <div className="mt-0.5 text-[12px]" style={{ color: "var(--fg-subtle)" }}>
+                  {r.role} · {r.siteName}
+                </div>
+              </div>
+              <StatusBadge level={r.status} />
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <MobileMetric label="Readiness" value={r.readinessScore.toFixed(1)} />
+              <MobileMetric label="Reaction" value={`${r.reactionTimeMs} ms`} />
+              <MobileMetric label="Focus" value={r.focusScore} />
+              <MobileMetric label="Coord" value={r.coordinationScore} />
+            </div>
+            <div className="mt-2 font-mono text-[11px]" style={{ color: "var(--fg-subtle)" }}>
+              {formatDateTime(r.timestampISO)} · z {r.anomalyZ.toFixed(2)}
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* desktop table */}
+      <div className="hidden overflow-x-auto md:block">
         <table className="w-full" style={{ fontSize: 13 }}>
           <thead>
             <tr
@@ -91,7 +122,7 @@ export function FeedTable({ rows }: { rows: FeedRow[] }) {
               <tr
                 key={r.assessmentId}
                 style={{ borderBottom: "1px solid var(--border-faint)" }}
-                className="hover:bg-ospat-bg-sunken transition-colors"
+                className="transition-colors hover:bg-ospat-bg-sunken"
               >
                 <td className="whitespace-nowrap px-5 py-3 font-mono text-[12px]" style={{ color: "var(--fg-subtle)" }}>
                   {formatDateTime(r.timestampISO)}
@@ -129,6 +160,28 @@ export function FeedTable({ rows }: { rows: FeedRow[] }) {
             ))}
           </tbody>
         </table>
+      </div>
+    </div>
+  );
+}
+
+function MobileMetric({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number;
+}) {
+  return (
+    <div
+      className="rounded-md px-3 py-2"
+      style={{ background: "var(--bg-sunken)", border: "1px solid var(--border)" }}
+    >
+      <div className="font-mono text-[10px] uppercase tracking-[0.04em]" style={{ color: "var(--fg-subtle)" }}>
+        {label}
+      </div>
+      <div className="mt-1 font-mono text-[13px] font-semibold" style={{ color: "var(--fg)" }}>
+        {value}
       </div>
     </div>
   );

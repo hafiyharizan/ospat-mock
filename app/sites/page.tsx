@@ -2,17 +2,19 @@ import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 import { getSiteSummaries } from "@/lib/data";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { MiniSparkline } from "@/components/charts/MiniSparkline";
-import { StatusBadge } from "@/components/ui/StatusBadge";
+import { SiteOperationsMap } from "@/components/sites/SiteOperationsMap";
 
 export default function SitesPage() {
   const sites = getSiteSummaries();
 
   return (
-    <div className="p-6">
+    <div className="w-full max-w-full min-w-0 p-4 sm:p-6">
       <PageHeader
         title="Sites"
-        description="Readiness drift, flagged burden, and riskiest shift by operating location · 14-day window."
+        description="Readiness drift, flagged burden, and riskiest shift across each site. 14-day window."
       />
+
+      <SiteOperationsMap sites={sites} />
 
       <div className="grid gap-4 md:grid-cols-2">
         {sites.map((site) => {
@@ -48,7 +50,7 @@ export default function SitesPage() {
                 </div>
               </div>
 
-              <div className="mt-5 grid grid-cols-4 gap-3">
+              <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <Metric label="Today" value={site.assessments} />
                 <Metric
                   label="Flagged"

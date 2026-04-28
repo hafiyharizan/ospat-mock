@@ -2,7 +2,7 @@ import { getFlaggedCases } from "@/lib/data";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ReviewQueue, type ReviewCaseProps } from "@/components/review/ReviewQueue";
 
-export default function PatternsPage() {
+export default function ResultPage() {
   const cases: ReviewCaseProps[] = getFlaggedCases().map((f) => ({
     assessmentId:     f.assessment.id,
     employeeId:       f.employee.id,
@@ -19,15 +19,16 @@ export default function PatternsPage() {
     deviationPct:     f.assessment.overallDeviationPct,
     status:           f.assessment.status,
     reason:           f.reason,
+    metricReasons:    f.metricReasons,
     suggestedAction:  f.suggestedAction,
     anomalyZ:         f.assessment.anomalyZ,
   }));
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       <PageHeader
-        title="Patterns"
-        description="Workers in retest or flag state · anomaly signal and suggested supervisor action."
+        title="Result"
+        description="Workers in Retest or Flag state, compared against their own baseline with clear supervisor action."
       />
       <ReviewQueue cases={cases} />
     </div>

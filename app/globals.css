@@ -3,43 +3,50 @@
 @tailwind utilities;
 
 /* ============================================================
-   OSPAT+ Design System — "Engineer Aesthetic"
-   Apple restraint · Linear clarity · Stripe cleanliness
+   OSPAT+ Design System — Permaconn / OSPAT
+   White industrial surfaces · black type · Permaconn green
    ============================================================ */
 
 :root {
+  /* Brand */
+  --permaconn-green: #00a85a;
+  --permaconn-green-2: #008f4d;
+  --permaconn-green-soft: #e7f6ee;
+  --permaconn-black: #050505;
+
   /* Neutral */
   --white:         #ffffff;
-  --off-white:     #fafaf9;
-  --neutral-50:    #f6f6f5;
-  --neutral-100:   #ececeb;
-  --neutral-200:   #dcdcdb;
-  --neutral-300:   #c2c2c1;
-  --neutral-400:   #9a9a98;
-  --neutral-500:   #6e6e6c;
-  --neutral-600:   #4a4a48;
-  --neutral-700:   #2f2f2e;
-  --neutral-800:   #1d1d1c;
-  --neutral-900:   #111110;
+  --off-white:     #f3f4f1;
+  --neutral-50:    #f8f9f6;
+  --neutral-100:   #eef0eb;
+  --neutral-200:   #dde1d8;
+  --neutral-300:   #c4cbc0;
+  --neutral-400:   #97a091;
+  --neutral-500:   #6a7466;
+  --neutral-600:   #454d42;
+  --neutral-700:   #2c332b;
+  --neutral-800:   #171c17;
+  --neutral-900:   #070907;
 
   /* Slate */
-  --slate-600:     #323d48;
-  --slate-700:     #1f2730;
-  --slate-800:     #131921;
-  --slate-900:     #0a0e14;
+  --slate-600:     #445147;
+  --slate-700:     #273129;
+  --slate-800:     #121812;
+  --slate-900:     #050705;
 
   /* Accents */
-  --accent-blue:   #2f6fed;
-  --accent-blue-2: #1f4dba;
-  --accent-emerald:#10996b;
-  --accent-violet: #7a6cf0;
-  --accent-amber:  #d39200;
-  --accent-red:    #c8392b;
+  --accent-blue:   #1976a3;
+  --accent-blue-2: #0d5c81;
+  --accent-emerald:#00a85a;
+  --accent-violet: #4f6f63;
+  --accent-amber:  #c88400;
+  --accent-red:    #c94432;
 
   /* Semantic — light */
   --bg:            var(--off-white);
   --bg-elev:       var(--white);
   --bg-sunken:     var(--neutral-50);
+  --bg-overlay:    rgba(5, 7, 5, 0.48);
   --fg:            var(--neutral-900);
   --fg-muted:      var(--neutral-600);
   --fg-subtle:     var(--neutral-500);
@@ -48,8 +55,8 @@
   --border-strong: var(--neutral-300);
   --border-faint:  var(--neutral-100);
 
-  --accent:        var(--accent-blue);
-  --accent-hover:  var(--accent-blue-2);
+  --accent:        var(--permaconn-green);
+  --accent-hover:  var(--permaconn-green-2);
   --accent-fg:     var(--white);
 
   --success:       var(--accent-emerald);
@@ -62,10 +69,18 @@
   --pressed-bg:    var(--neutral-200);
 
   /* Shadows */
-  --shadow-xs: 0 1px 0 0 rgba(17,17,16,0.04), 0 1px 2px -1px rgba(17,17,16,0.06);
-  --shadow-sm: 0 1px 0 0 rgba(17,17,16,0.04), 0 2px 4px -2px rgba(17,17,16,0.08);
-  --shadow-md: 0 1px 0 0 rgba(17,17,16,0.04), 0 4px 8px -3px rgba(17,17,16,0.08), 0 8px 24px -8px rgba(17,17,16,0.10);
-  --shadow-button: 0 1px 0 0 rgba(255,255,255,0.16) inset, 0 1px 2px 0 rgba(17,17,16,0.16), 0 0 0 1px rgba(17,17,16,0.06);
+  --shadow-xs: 0 1px 0 0 rgba(5,5,5,0.04), 0 1px 2px -1px rgba(5,5,5,0.06);
+  --shadow-sm: 0 1px 0 0 rgba(5,5,5,0.04), 0 2px 4px -2px rgba(5,5,5,0.08);
+  --shadow-md: 0 1px 0 0 rgba(5,5,5,0.04), 0 4px 8px -3px rgba(5,5,5,0.08), 0 8px 24px -8px rgba(5,5,5,0.10);
+  --shadow-button: 0 1px 0 0 rgba(255,255,255,0.24) inset, 0 1px 2px 0 rgba(5,5,5,0.18), 0 0 0 1px rgba(5,5,5,0.06);
+
+  /* OSPAT concept aliases used by chart/summary components */
+  --oc-paper:      var(--bg);
+  --oc-paper-2:    var(--bg-elev);
+  --oc-ink:        var(--fg);
+  --oc-sage:       var(--success);
+  --oc-amber:      var(--warning);
+  --oc-coral:      var(--danger);
 
   /* Type */
   --font-sans:    "Inter", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
@@ -87,51 +102,38 @@
 
 /* Dark theme */
 [data-theme="dark"], .dark {
-  --bg:           #0b0d10;
-  --bg-elev:      #14171b;
-  --bg-sunken:    #0a0c0f;
-  --fg:           #ececea;
-  --fg-muted:     #b0b3b8;
-  --fg-subtle:    #8a8f95;
-  --fg-faint:     #5f656c;
-  --border:       #23272d;
-  --border-strong:#2e333a;
-  --border-faint: #1a1d22;
-  --accent:       #4f88f5;
-  --accent-hover: #6a9bf7;
-  --hover-bg:     #1a1e23;
-  --selected-bg:  #232830;
-  --pressed-bg:   #2c333c;
+  --bg:           #07100b;
+  --bg-elev:      #101813;
+  --bg-sunken:    #050a07;
+  --bg-overlay:   rgba(0, 0, 0, 0.64);
+  --fg:           #f4f7f1;
+  --fg-muted:     #c0cabe;
+  --fg-subtle:    #8d9b8b;
+  --fg-faint:     #5f6a5e;
+  --border:       #263127;
+  --border-strong:#344234;
+  --border-faint: #1a241b;
+  --accent:       #17b969;
+  --accent-hover: #24cf78;
+  --hover-bg:     #142017;
+  --selected-bg:  #1b2b20;
+  --pressed-bg:   #243826;
   --shadow-xs: 0 1px 0 0 rgba(0,0,0,0.4);
   --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.5);
   --shadow-md: 0 6px 16px -6px rgba(0,0,0,0.6);
   --shadow-button: 0 1px 0 0 rgba(255,255,255,0.08) inset, 0 1px 2px 0 rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg:           #0b0d10;
-    --bg-elev:      #14171b;
-    --bg-sunken:    #0a0c0f;
-    --fg:           #ececea;
-    --fg-muted:     #b0b3b8;
-    --fg-subtle:    #8a8f95;
-    --fg-faint:     #5f656c;
-    --border:       #23272d;
-    --border-strong:#2e333a;
-    --border-faint: #1a1d22;
-    --accent:       #4f88f5;
-    --accent-hover: #6a9bf7;
-    --hover-bg:     #1a1e23;
-    --selected-bg:  #232830;
-    --pressed-bg:   #2c333c;
-  }
+  --oc-paper:      var(--bg);
+  --oc-paper-2:    var(--bg-elev);
+  --oc-ink:        var(--fg);
 }
 
 /* ── Base ── */
 *, *::before, *::after { box-sizing: border-box; }
 
-html, body { height: 100%; }
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
 
 body {
   background: var(--bg);

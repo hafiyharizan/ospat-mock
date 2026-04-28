@@ -48,30 +48,30 @@ export function EmployeeScoreChart({
           }}
           labelStyle={{ color: c.tooltipLabel }}
           itemStyle={{ color: c.tooltipItem }}
-          formatter={(v: number) => [v, "Score"]}
+          formatter={(v: number) => [Number(v).toFixed(1), "Readiness"]}
         />
         <ReferenceLine
           y={baseline}
-          stroke="rgba(90,138,122,0.55)"
+          stroke="var(--accent)"
           strokeDasharray="4 4"
           label={{
-            value: `Baseline ${baseline}`,
-            fill: "#5a8a7a",
+            value: `Own baseline ${baseline.toFixed(1)}`,
+            fill: "var(--accent)",
             fontSize: 10,
             position: "insideTopRight",
           }}
         />
         <ReferenceLine
           y={baseline * 0.85}
-          stroke="rgba(232,85,58,0.45)"
+          stroke="var(--danger)"
           strokeDasharray="2 4"
         />
         <Line
           type="monotone"
           dataKey="score"
-          stroke="#5a8a7a"
+          stroke="var(--accent)"
           strokeWidth={2}
-          dot={{ r: 3, fill: "#5a8a7a", stroke: c.dotStroke, strokeWidth: 1 }}
+          dot={{ r: 3, fill: "var(--accent)", stroke: c.dotStroke, strokeWidth: 1 }}
           activeDot={{ r: 5 }}
         />
       </LineChart>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Box,
-  BrainCircuit,
+  ClipboardCheck,
   Download,
   LayoutDashboard,
   Menu,
@@ -14,11 +14,12 @@ import {
   X,
 } from "lucide-react";
 import clsx from "clsx";
+import { ThemeToggle } from "./ThemeToggle";
 
 const NAV = [
   { href: "/live",    label: "Live",     icon: LayoutDashboard },
   { href: "/feed",    label: "People",   icon: Users },
-  { href: "/review",  label: "Patterns", icon: BrainCircuit },
+  { href: "/review",  label: "Result",   icon: ClipboardCheck },
   { href: "/sites",   label: "Sites",    icon: Box },
   { href: "/reports", label: "Reports",  icon: Download },
   { href: "/settings",label: "Settings", icon: Settings },
@@ -38,6 +39,7 @@ export function MobileNav() {
         onClick={() => setOpen(true)}
         className="inline-flex h-8 w-8 items-center justify-center rounded-md lg:hidden"
         style={{ border: "1px solid var(--border)", background: "var(--bg-elev)" }}
+        aria-label="Open navigation"
       >
         <Menu className="h-4 w-4" style={{ color: "var(--fg-muted)" }} />
       </button>
@@ -60,9 +62,9 @@ export function MobileNav() {
               <div className="flex items-center gap-2">
                 <div
                   className="flex h-6 w-6 items-center justify-center rounded-md text-xs font-bold"
-                  style={{ background: "var(--neutral-900)", color: "var(--white)" }}
+                  style={{ background: "var(--accent)", color: "var(--white)" }}
                 >
-                  O
+                  P
                 </div>
                 <span className="text-[13px] font-semibold" style={{ color: "var(--fg)" }}>
                   OSPAT+
@@ -72,6 +74,7 @@ export function MobileNav() {
                 onClick={() => setOpen(false)}
                 className="flex h-7 w-7 items-center justify-center rounded-md"
                 style={{ color: "var(--fg-muted)" }}
+                aria-label="Close navigation"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -98,6 +101,13 @@ export function MobileNav() {
                 );
               })}
             </nav>
+
+            <div className="px-4 py-3" style={{ borderTop: "1px solid var(--border-faint)" }}>
+              <div className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.05em]" style={{ color: "var(--fg-subtle)" }}>
+                Appearance
+              </div>
+              <ThemeToggle />
+            </div>
           </aside>
         </div>
       )}

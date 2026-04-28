@@ -3,6 +3,23 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ConditionalShell } from "@/components/layout/ConditionalShell";
 
+const themeInitScript = `
+(() => {
+  try {
+    const stored = localStorage.getItem("ospat-theme");
+    const mode = stored === "light" || stored === "dark" || stored === "auto" ? stored : "auto";
+    const resolved = mode === "auto"
+      ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+      : mode;
+    document.documentElement.dataset.theme = resolved;
+    document.documentElement.classList.toggle("dark", resolved === "dark");
+  } catch {
+    document.documentElement.dataset.theme = "light";
+    document.documentElement.classList.remove("dark");
+  }
+})();
+`;
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -18,9 +35,9 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OSPAT+",
+  title: "OSPAT+ | Permaconn",
   description:
-    "Real-time fitness-for-work readiness, personal-band monitoring, and supervisor routing.",
+    "Permaconn OSPAT+ readiness concept for fitness-for-work signals, personal-band monitoring, and supervisor routing.",
 };
 
 export default function RootLayout({
@@ -34,10 +51,12 @@ export default function RootLayout({
       className={`${inter.variable} ${jetBrainsMono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="font-sans antialiased">
         <ConditionalShell>{children}</ConditionalShell>
       </body>
     </html>
   );
 }
-
