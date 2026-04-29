@@ -6,6 +6,7 @@ import { Check, ClipboardCheck, RotateCcw } from "lucide-react";
 import { useReviewStore, useHasHydrated } from "@/store/reviewStore";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SupervisorHandoverCard } from "@/components/ai/SupervisorHandoverCard";
 import { formatDateTime } from "@/lib/format";
 import type { ShiftType, AssessmentStatus } from "@/lib/types";
 
@@ -91,20 +92,7 @@ function AiPatternsPanel({ cases }: { cases: ReviewCaseProps[] }) {
         ))}
       </div>
 
-      <div className="card" style={{ padding: "14px 16px" }}>
-        <div className="mb-2 flex items-center justify-between gap-2">
-          <span className="badge badge-info">AI assist</span>
-          <span className="font-mono text-[10px]" style={{ color: "var(--fg-subtle)" }}>
-            free-tier demo
-          </span>
-        </div>
-        <p className="text-[12.5px] leading-relaxed" style={{ color: "var(--fg-muted)" }}>
-          Use Gemini Flash free tier or a small OpenRouter free model to turn already-calculated Retest/Flag signals into a supervisor handover summary.
-        </p>
-        <p className="mt-2 font-mono text-[10.5px]" style={{ color: "var(--fg-subtle)" }}>
-          Rules stay source of truth · deterministic fallback if no API key
-        </p>
-      </div>
+      <SupervisorHandoverCard variant="review" />
     </aside>
   );
 }

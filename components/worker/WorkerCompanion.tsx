@@ -72,13 +72,16 @@ type MutableStats = {
   coordinationSamples: number;
 };
 
-type OrientationEventWithPermission = typeof DeviceOrientationEvent & {
-  requestPermission?: () => Promise<PermissionState>;
-};
-
 const BASELINE_KEY = "ospat.worker.baseline.v1";
 const TEST_DURATION_SEC = 30;
 const RESPONSE_WINDOW_MS = 1050;
+const TARGET_HIT_RADIUS = 38;
+const TARGET_IDLE_RADIUS = 24;
+const TARGET_ACTIVE_RADIUS = 34;
+const TARGET_CENTER_IDLE_RADIUS = 6;
+const TARGET_CENTER_ACTIVE_RADIUS = 8;
+const USER_HALO_RADIUS = 34;
+const USER_DOT_RADIUS = 9;
 
 /* Worker data */
 const WORKER = {
@@ -292,37 +295,6 @@ function buildResult(metrics: TestMetrics, baseline: Baseline | null): TestResul
   };
 }
 
-async function resolveStartMode(requestedMode: TestMode): Promise<{ mode: TestMode; notice?: string }> {
-  if (requestedMode === "touch") return { mode: "touch" };
-  if (typeof window === "undefined" || !("DeviceOrientationEvent" in window)) {
-    return {
-      mode: "touch",
-      notice: "Tilt sensor is not available in this browser. Touch mode is active.",
-    };
-  }
-
-  const OrientationEvent = window.DeviceOrientationEvent as unknown as OrientationEventWithPermission;
-
-  if (typeof OrientationEvent.requestPermission === "function") {
-    try {
-      const permission = await OrientationEvent.requestPermission();
-      if (permission !== "granted") {
-        return {
-          mode: "touch",
-          notice: "Tilt permission was not granted. Touch mode is active.",
-        };
-      }
-    } catch {
-      return {
-        mode: "touch",
-        notice: "Tilt permission could not be opened. Touch mode is active.",
-      };
-    }
-  }
-
-  return { mode: "tilt" };
-}
-
 /* Pre-shift sparkline */
 function Sparkline() {
   const W = 260;
@@ -438,56 +410,12 @@ function MetricTile({
   );
 }
 
-function ModeToggle({
-  mode,
-  onChange,
-}: {
-  mode: TestMode;
-  onChange: (mode: TestMode) => void;
-}) {
-  return (
-    <div
-      className="grid grid-cols-2 rounded-lg p-1"
-      role="group"
-      aria-label="Worker test input mode"
-      style={{ background: "var(--bg-sunken)", border: "1px solid var(--border)" }}
-    >
-      {(["touch", "tilt"] as const).map((option) => {
-        const selected = mode === option;
-
-        return (
-          <button
-            key={option}
-            type="button"
-            aria-pressed={selected}
-            onClick={() => onChange(option)}
-            className="h-9 rounded-md text-[12.5px] font-semibold transition-all"
-            style={{
-              background: selected ? "var(--bg-elev)" : "transparent",
-              color: selected ? "var(--fg)" : "var(--fg-muted)",
-              border: selected ? "1px solid var(--border-strong)" : "1px solid transparent",
-              boxShadow: selected ? "var(--shadow-xs)" : "none",
-              cursor: "pointer",
-            }}
-          >
-            {option === "touch" ? "Touch" : "Tilt"}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
 function PreShiftScreen({
   onStart,
-  mode,
-  onModeChange,
   starting,
   modeNotice,
 }: {
   onStart: () => void;
-  mode: TestMode;
-  onModeChange: (mode: TestMode) => void;
   starting: boolean;
   modeNotice?: string;
 }) {
@@ -511,10 +439,25 @@ function PreShiftScreen({
         <div className="mb-2 flex items-center justify-between">
           <span className="eyebrow">Input mode</span>
           <span className="font-mono text-[10.5px] uppercase tracking-[0.06em]" style={{ color: "var(--fg-subtle)" }}>
-            Touch / Tilt
+            Touch
           </span>
         </div>
-        <ModeToggle mode={mode} onChange={onModeChange} />
+        <div
+          className="rounded-xl px-3 py-3"
+          style={{ background: "var(--bg-elev)", border: "1px solid var(--border)" }}
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-[13px] font-semibold" style={{ color: "var(--fg)" }}>
+                Finger tracking
+              </div>
+              <p className="mt-0.5 text-[12px] leading-snug" style={{ color: "var(--fg-muted)" }}>
+                Drag inside the large ring and tap amber targets.
+              </p>
+            </div>
+            <span className="badge badge-info">active</span>
+          </div>
+        </div>
         {modeNotice && (
           <p className="mt-2 text-[12px] leading-relaxed" style={{ color: "var(--warning)" }}>
             {modeNotice}
@@ -578,7 +521,7 @@ function PreShiftScreen({
             cursor: starting ? "wait" : "pointer",
           }}
         >
-          {starting ? "Starting sensor..." : "Start measured check-in"}
+          {starting ? "Starting check..." : "Start measured check-in"}
         </button>
         <div className="text-center font-mono text-[11px]" style={{ color: "var(--fg-subtle)" }}>
           {WORKER.id} · biometric verified
@@ -765,7 +708,7 @@ function TestScreen({
       if (doneRef.current) return;
 
       const targetDistance = Math.hypot(x - pointRef.current.targetX, y - pointRef.current.targetY);
-      const insideTarget = targetDistance <= 28;
+      const insideTarget = targetDistance <= TARGET_HIT_RADIUS;
       const activeEvent = activeEventRef.current;
 
       if (activeEvent && now <= activeEvent.expiresAt && insideTarget) {
@@ -1055,14 +998,44 @@ function TestScreen({
             ref={targetCircleRef}
             cx={CX}
             cy={CY}
-            r={live.eventActive ? 21 : 16}
-            fill={live.eventActive ? "color-mix(in oklch, var(--warning) 12%, transparent)" : "none"}
+            r={live.eventActive ? TARGET_ACTIVE_RADIUS : TARGET_IDLE_RADIUS}
+            fill={
+              live.eventActive
+                ? "color-mix(in oklch, var(--warning) 16%, transparent)"
+                : "color-mix(in oklch, var(--success) 7%, transparent)"
+            }
             stroke={live.eventActive ? "var(--warning)" : "var(--success)"}
-            strokeWidth={live.eventActive ? "2.5" : "1.75"}
+            strokeWidth={live.eventActive ? "3.25" : "2.25"}
           />
-          <circle ref={targetCenterRef} cx={CX} cy={CY} r={live.eventActive ? 4.5 : 3.5} fill={live.eventActive ? "var(--warning)" : "var(--success)"} />
-          <circle ref={userHaloRef} cx={CX} cy={CY} r={12} fill="var(--accent)" opacity="0.12" />
-          <circle ref={userCircleRef} cx={CX} cy={CY} r={5.5} fill="var(--fg)" />
+          <circle
+            ref={targetCenterRef}
+            cx={CX}
+            cy={CY}
+            r={live.eventActive ? TARGET_CENTER_ACTIVE_RADIUS : TARGET_CENTER_IDLE_RADIUS}
+            fill={live.eventActive ? "var(--warning)" : "var(--success)"}
+            stroke="var(--bg)"
+            strokeWidth="2"
+          />
+          <circle
+            ref={userHaloRef}
+            cx={CX}
+            cy={CY}
+            r={USER_HALO_RADIUS}
+            fill="var(--accent)"
+            opacity="0.16"
+            stroke="var(--accent)"
+            strokeWidth="2"
+            strokeOpacity="0.55"
+          />
+          <circle
+            ref={userCircleRef}
+            cx={CX}
+            cy={CY}
+            r={USER_DOT_RADIUS}
+            fill="var(--fg)"
+            stroke="var(--bg)"
+            strokeWidth="3"
+          />
         </svg>
       </div>
 
@@ -1304,30 +1277,23 @@ function ResultScreen({ result, onRetry }: { result: TestResult; onRetry: () => 
 
 export function WorkerCompanion() {
   const [stage, setStage] = useState<Stage>("pre");
-  const [selectedMode, setSelectedMode] = useState<TestMode>("touch");
   const [activeMode, setActiveMode] = useState<TestMode>("touch");
   const [modeNotice, setModeNotice] = useState<string>();
   const [starting, setStarting] = useState(false);
   const [result, setResult] = useState<TestResult | null>(null);
   const baselineAtStartRef = useRef<Baseline | null>(null);
 
-  const handleModeChange = useCallback((mode: TestMode) => {
-    setSelectedMode(mode);
-    setModeNotice(undefined);
-  }, []);
-
-  const handleStart = useCallback(async () => {
+  const handleStart = useCallback(() => {
     setStarting(true);
     const baseline = readBaseline();
-    const resolvedMode = await resolveStartMode(selectedMode);
 
     baselineAtStartRef.current = baseline;
-    setActiveMode(resolvedMode.mode);
-    setModeNotice(resolvedMode.notice);
+    setActiveMode("touch");
+    setModeNotice(undefined);
     setResult(null);
     setStage("test");
     setStarting(false);
-  }, [selectedMode]);
+  }, []);
 
   const handleComplete = useCallback((metrics: TestMetrics) => {
     const baseline = baselineAtStartRef.current;
@@ -1382,8 +1348,6 @@ export function WorkerCompanion() {
           {stage === "pre" && (
             <PreShiftScreen
               onStart={handleStart}
-              mode={selectedMode}
-              onModeChange={handleModeChange}
               starting={starting}
               modeNotice={modeNotice}
             />

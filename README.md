@@ -18,10 +18,15 @@ to a quick start-of-shift readiness assessment system:
 - Each employee has a **personal baseline** built from their own historical
   performance.
 - Today's assessment is compared against that baseline, and anomalies surface
-  as **Cleared / Monitor / Review Required**.
+  as **Pass / Retest / Flag**.
 - Supervisors get a single console showing today's volume, flagged cases by
   shift and site, individual employee trajectories, and a focused review
   queue with suggested actions.
+- Workers get a touch-first mobile check-in that measures reaction response,
+  target tracking, missed events, and false taps against a locally stored
+  baseline.
+- OpenRouter can generate a supervisor handover brief from already-classified
+  Retest/Flag cases, with a deterministic fallback if the API is unavailable.
 
 The design priorities were: signal density without clutter, dark "command
 centre" aesthetic appropriate for a 24/7 operations environment, and clearly
@@ -32,23 +37,29 @@ rather than just *what*.
 
 | Route              | Purpose                                                                 |
 | ------------------ | ----------------------------------------------------------------------- |
-| `/`                | Dashboard overview — KPIs, trend, risk distribution, sites, shifts      |
+| `/`                | Role selector — operations console or worker check-in                   |
+| `/live`            | Operations console — KPIs, shift-start wave, attention queue, AI brief  |
+| `/worker`          | Touch-first worker check-in — reaction + coordination measurement       |
 | `/feed`            | Live assessment feed — searchable / filterable / sortable + CSV export  |
 | `/sites`           | Site risk view — per-site assessments, flagged counts, trend, sparkline |
 | `/employees/[id]`  | Employee detail — last 20 scores vs. baseline, timeline, insight card   |
 | `/review`          | Supervisor review queue — acknowledge, mark reviewed, add note          |
+| `/reports`         | Supervisor action log and audit-ready result summaries                  |
+| `/settings`        | Routing rules, thresholds, export policy, and demo configuration        |
+| `/api/ai/handover` | Server-only OpenRouter handover generation endpoint                     |
 
 ## Tech stack
 
-- **Next.js 15** (App Router) + **React 19**
+- **Next.js 16** (App Router) + **React 19**
 - **TypeScript** (strict)
 - **Tailwind CSS** (`darkMode: 'class'`, dark by default)
 - **Recharts** for line / area / bar / donut / sparkline charts
 - **Zustand** (with `persist` middleware) for the review-queue local state
 - **lucide-react** for monotone iconography
 - **Inter** via `next/font/google`
+- **OpenRouter-compatible AI handover brief** with deterministic fallback
 
-No database, no API routes, no auth. The dataset is generated deterministically
+No database and no auth. The dataset is generated deterministically
 from a seeded PRNG (`mulberry32`) at module load, so charts, KPIs, and sample
 employees are stable across reloads and across machines.
 
@@ -60,6 +71,17 @@ npm run dev
 # open http://localhost:3000
 ```
 
+Optional AI handover testing:
+
+```env
+OPENROUTER_API_KEY=...
+OPENROUTER_MODEL=google/gemini-2.0-flash-exp:free
+```
+
+The API key stays server-side in `.env.local`. If the OpenRouter key, quota, or
+model fails, the UI keeps working with a deterministic rule-based handover
+summary.
+
 Production build:
 
 ```bash
@@ -67,26 +89,38 @@ npm run build
 npm run start
 ```
 
+Set `NEXT_PUBLIC_BASE_PATH=/ospat-mock` only when serving the app from that
+sub-path. The AI route requires a server-capable Next deployment, not static
+HTML export.
+
 ## Project structure
 
 ```
 app/                       App Router routes + per-route loading skeletons
-  layout.tsx               Sidebar + Topbar + sticky SummaryBar shell
-  page.tsx                 Dashboard overview
+  api/ai/handover/route.ts Server-only AI handover endpoint
+  layout.tsx               App metadata + conditional shell
+  page.tsx                 Role selector
+  live/page.tsx            Operations console
+  worker/page.tsx          Worker mobile check-in
   feed/page.tsx            Live assessment feed (CSV export)
   sites/page.tsx           Site risk view
   employees/[id]/page.tsx  Employee detail (async params)
   review/page.tsx          Supervisor review queue
+  reports/page.tsx         Action/audit summaries
+  settings/page.tsx        Rules and routing configuration
 components/
+  ai/                      AI handover UI
   layout/                  Sidebar, Topbar, SummaryBar, DemoBadge
   ui/                      Card, StatCard, StatusBadge, Skeleton, EmptyState, PageHeader
   charts/                  All "use client" — Recharts wrappers + ChartCard
   feed/                    FeedTable (search / filter / sort / export)
   review/                  ReviewQueue (Zustand-backed actions)
+  worker/                  Touch-first worker check-in experience
 lib/
+  aiHandover.ts            OpenRouter request + deterministic fallback
   types.ts                 Domain types
   rng.ts                   mulberry32 + helpers
-  risk.ts                  Pure classification (Cleared / Monitor / Review Required)
+  risk.ts                  Pure classification (Pass / Retest / Flag)
   generate.ts              Deterministic mock dataset
   data.ts                  Singleton + selectors used by server components
   csv.ts                   toCsv + downloadCsv
@@ -95,18 +129,41 @@ store/
   reviewStore.ts           Zustand + persist + useHasHydrated()
 ```
 
+## AI handover
+
+The AI handover flow is deliberately constrained:
+
+- The server route sends only generated demo Retest/Flag cases to OpenRouter.
+- The model is asked to summarise operational signals, not diagnose medical
+  conditions.
+- The deterministic rule fallback is the source of truth when the API is
+  missing, rate-limited, or returns no text.
+- The browser sees the generated brief and metadata, never the API key.
+
+## Worker check-in
+
+The worker surface is a mobile-first touch interaction:
+
+- The worker drags a visible finger marker inside a tracking area.
+- Amber events require a quick tap within the enlarged target ring.
+- Metrics include average reaction time, coordination score, missed events,
+  false taps, and a derived readiness score.
+- The first completed run creates a local baseline in `localStorage`; later
+  runs compare against that baseline.
+- Tilt mode is currently hidden so the demo stays reliable for finger use.
+
 ## Risk classification
 
-The pure function `classify(score, baseline, recentScores)` in `lib/risk.ts`
-encodes the rules:
+The rules in `lib/risk.ts` classify assessments into:
 
 | Outcome           | Trigger                                                     |
 | ----------------- | ----------------------------------------------------------- |
-| **Review Required** | Score >15% below personal baseline, **or** 3+ consecutive declining results below baseline |
-| **Monitor**         | Score 10–15% below personal baseline                       |
-| **Cleared**         | Otherwise (within ~10% of baseline or above)                |
+| **Pass**          | Inside the worker's expected personal range                 |
+| **Retest**        | 8%+ baseline drop, reduced readiness, fatigue signal, or moderate anomaly |
+| **Flag**          | 18%+ baseline drop, low readiness, high fatigue signal, or severe anomaly |
 
-Deviation is reported as `(score − baseline) / baseline × 100`.
+Flagged cases include metric-level reasons such as reaction time, accuracy,
+coordination/consistency, or fatigue-risk movement against baseline.
 
 ## Mock dataset
 
@@ -133,6 +190,10 @@ Because the seed is fixed, screenshots and demo videos stay reproducible.
 - Subtle radial gradient background — keeps the surface alive without noise
 - "Demo data only" badge in the topbar at all times
 - CSV export from the feed produces a real file from the currently filtered rows
+- Touch check-in uses large rings/markers so the tracked point remains visible
+  under a finger
+- AI handover card works from the dashboard and review queue without exposing
+  secrets to the client
 - Status colors are consistent across badges, dots, sparklines, and charts:
   sage = Pass, amber = Retest, coral = Flag
 
@@ -153,6 +214,8 @@ If this concept were taken to production, the natural next steps would be:
 - **Predictive fatigue / risk modelling** — moving beyond rule-based deviations
   to per-employee models that incorporate roster patterns, sleep proxies, and
   cumulative shift load
+- **Optional tilt input** — re-enable a sensor-based worker mode after device
+  permission handling and visibility are production-ready
 - **Site comparison & benchmarking** — anonymised cross-site insights for
   enterprise customers operating multiple sites
 
@@ -171,15 +234,19 @@ A few things this concept tries to demonstrate:
 - **The review queue is a workflow, not a list** — Acknowledge / Mark Reviewed
   / Add Note are the primitives for accountability. Persisting state locally
   is the MVP shim; in production this becomes an audit-logged backend action.
+- **AI is bounded by operational rules** — OpenRouter only turns existing
+  Retest/Flag signals into handover copy. The app still works without the
+  model, and the fallback output remains deterministic.
+- **Worker UX is touch-first** — The check-in avoids fragile sensor permissions
+  and keeps the tracked marker large enough to remain visible under a finger.
 - **Server / client boundary discipline** — mock data is generated on the
   server (deterministic seed), passed as serializable props to client
-  components. Charts and interactive surfaces are isolated to client
-  components. This avoids hydration mismatches and keeps the JS bundle
-  focused.
+  components. The OpenRouter call is isolated to a server route, while charts
+  and interactive surfaces stay in client components.
 - **Consistent visual language for risk** — the same three colours
   (emerald / amber / rose) appear in every chart, badge, dot, and sparkline.
   In a 24/7 operations setting, that consistency lowers cognitive load.
-- **Restraint in scope** — no auth, no backend, no half-built features. The
+- **Restraint in scope** — no auth, no database, no half-built features. The
   product surface that exists is finished; the rest is documented as roadmap.
 
 ## License & attribution

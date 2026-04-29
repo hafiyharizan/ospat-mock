@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { DashboardKpis } from "@/lib/types";
 import { RESULT_THRESHOLDS } from "@/lib/risk";
+import { SupervisorHandoverCard } from "@/components/ai/SupervisorHandoverCard";
 
 interface Props {
   kpis: DashboardKpis;
@@ -163,33 +164,6 @@ function ThresholdRuleCards() {
           </p>
         </div>
       ))}
-    </div>
-  );
-}
-
-function AiAssistCard() {
-  return (
-    <div className="card" style={{ padding: "12px 14px" }}>
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <span className="badge badge-info">AI assist</span>
-        <span className="font-mono text-[10px]" style={{ color: "var(--fg-subtle)" }}>
-          free-tier showcase
-        </span>
-      </div>
-      <h3 className="text-[13px] font-semibold" style={{ color: "var(--fg)" }}>
-        Supervisor handover brief
-      </h3>
-      <p className="mt-2 text-[12px] leading-relaxed" style={{ color: "var(--fg-muted)" }}>
-        Summarise only Retest/Flag cases, cite the baseline metric that moved, and suggest the next supervisor action. No diagnosis.
-      </p>
-      <div className="mt-3 rounded-md p-3" style={{ background: "var(--bg-sunken)", border: "1px solid var(--border)" }}>
-        <div className="font-mono text-[10px] uppercase tracking-[0.05em]" style={{ color: "var(--fg-subtle)" }}>
-          Suggested stack
-        </div>
-        <p className="mt-1 text-[12px] leading-relaxed" style={{ color: "var(--fg)" }}>
-          Gemini Flash free tier or a small OpenRouter free model, called from one server action with a deterministic rule fallback.
-        </p>
-      </div>
     </div>
   );
 }
@@ -528,7 +502,7 @@ export function LiveDashboard({ kpis }: Props) {
           Results explain the metric that moved: reaction time, accuracy, consistency, or fatigue-risk score.
         </div>
 
-        <AiAssistCard />
+        <SupervisorHandoverCard />
       </aside>
     </div>
   );
