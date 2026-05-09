@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, LoaderCircle, Sparkles } from "lucide-react";
+import { AlertTriangle, Sparkles } from "lucide-react";
 import clsx from "clsx";
-import type { AiHandoverResult } from "@/lib/aiHandover";
+import { generateStaticSupervisorHandover, type AiHandoverResult } from "@/lib/aiHandover";
 
 type Variant = "dashboard" | "review";
 
@@ -14,46 +14,20 @@ const initialCopy = {
     "Turn the current Retest/Flag queue into a supervisor handover using only the already-calculated rule signals.",
 };
 
-function handoverEndpoint() {
-  if (typeof window === "undefined") return "/api/ai/handover";
-  const prefix = window.location.pathname.startsWith("/ospat-mock") ? "/ospat-mock" : "";
-  return `${prefix}/api/ai/handover`;
-}
-
 function providerLabel(result: AiHandoverResult | null) {
-  if (!result) return "OpenRouter ready";
+  if (!result) return "Rule-based brief";
   if (result.source === "openrouter") return "OpenRouter live";
-  return "Rule fallback";
+  return "Rule-based brief";
 }
 
 export function SupervisorHandoverCard({ variant = "dashboard" }: { variant?: Variant }) {
   const [result, setResult] = useState<AiHandoverResult | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  async function generate() {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(handoverEndpoint(), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Request failed with ${response.status}`);
-      }
-
-      setResult((await response.json()) as AiHandoverResult);
-    } catch {
-      setError("AI handover is unavailable from this browser session.");
-    } finally {
-      setIsLoading(false);
-    }
+  function generate() {
+    setResult(generateStaticSupervisorHandover());
   }
 
-  const providerTone = result?.source === "fallback" ? "badge-warn" : "badge-info";
+  const providerTone = result?.source === "fallback" && result.fallbackReason ? "badge-warn" : "badge-info";
   const isReview = variant === "review";
 
   return (
@@ -85,35 +59,17 @@ export function SupervisorHandoverCard({ variant = "dashboard" }: { variant?: Va
         </div>
       )}
 
-      {error && (
-        <div
-          className="mt-3 rounded-md px-3 py-2 text-[11.5px]"
-          style={{
-            background: "color-mix(in oklch, var(--danger) 8%, var(--bg-sunken))",
-            border: "1px solid color-mix(in oklch, var(--danger) 26%, transparent)",
-            color: "var(--fg-muted)",
-          }}
-        >
-          {error}
-        </div>
-      )}
-
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={generate}
-          disabled={isLoading}
-          className="btn-primary h-8 gap-1.5 text-[12px] disabled:cursor-wait disabled:opacity-70"
+          className="btn-primary h-8 gap-1.5 text-[12px]"
         >
-          {isLoading ? (
-            <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
-          ) : (
-            <Sparkles className="h-3.5 w-3.5" />
-          )}
+          <Sparkles className="h-3.5 w-3.5" />
           {result ? "Refresh brief" : "Generate brief"}
         </button>
         <span className="font-mono text-[10.5px]" style={{ color: "var(--fg-subtle)" }}>
-          {result ? `${result.caseCount} cases · ${result.model}` : "server-side key"}
+          {result ? `${result.caseCount} cases · ${result.model}` : "local rule engine"}
         </span>
       </div>
     </div>
