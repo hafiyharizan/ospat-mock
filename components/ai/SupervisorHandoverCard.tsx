@@ -22,16 +22,9 @@ function providerLabel(result: AiHandoverResult | null) {
 
 export function SupervisorHandoverCard({ variant = "dashboard" }: { variant?: Variant }) {
   const [result, setResult] = useState<AiHandoverResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   function generate() {
-    setError(null);
-
-    try {
-      setResult(generateStaticSupervisorHandover());
-    } catch {
-      setError("Failed to generate handover brief.");
-    }
+    setResult(generateStaticSupervisorHandover());
   }
 
   const providerTone = result?.source === "fallback" && result.fallbackReason ? "badge-warn" : "badge-info";
@@ -63,19 +56,6 @@ export function SupervisorHandoverCard({ variant = "dashboard" }: { variant?: Va
         >
           <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: "var(--warning)" }} />
           <span>{result.fallbackReason}</span>
-        </div>
-      )}
-
-      {error && (
-        <div
-          className="mt-3 rounded-md px-3 py-2 text-[11.5px]"
-          style={{
-            background: "color-mix(in oklch, var(--danger) 8%, var(--bg-sunken))",
-            border: "1px solid color-mix(in oklch, var(--danger) 26%, transparent)",
-            color: "var(--fg-muted)",
-          }}
-        >
-          {error}
         </div>
       )}
 
