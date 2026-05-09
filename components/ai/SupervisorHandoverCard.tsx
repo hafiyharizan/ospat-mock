@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, LoaderCircle, Sparkles } from "lucide-react";
+import { AlertTriangle, Sparkles } from "lucide-react";
 import clsx from "clsx";
 import { generateStaticSupervisorHandover, type AiHandoverResult } from "@/lib/aiHandover";
 
@@ -22,19 +22,15 @@ function providerLabel(result: AiHandoverResult | null) {
 
 export function SupervisorHandoverCard({ variant = "dashboard" }: { variant?: Variant }) {
   const [result, setResult] = useState<AiHandoverResult | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function generate() {
-    setIsLoading(true);
+  function generate() {
     setError(null);
 
     try {
       setResult(generateStaticSupervisorHandover());
     } catch {
       setError("Failed to generate handover brief.");
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -87,14 +83,9 @@ export function SupervisorHandoverCard({ variant = "dashboard" }: { variant?: Va
         <button
           type="button"
           onClick={generate}
-          disabled={isLoading}
-          className="btn-primary h-8 gap-1.5 text-[12px] disabled:cursor-wait disabled:opacity-70"
+          className="btn-primary h-8 gap-1.5 text-[12px]"
         >
-          {isLoading ? (
-            <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
-          ) : (
-            <Sparkles className="h-3.5 w-3.5" />
-          )}
+          <Sparkles className="h-3.5 w-3.5" />
           {result ? "Refresh brief" : "Generate brief"}
         </button>
         <span className="font-mono text-[10.5px]" style={{ color: "var(--fg-subtle)" }}>
