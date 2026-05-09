@@ -32,7 +32,7 @@ export function SupervisorHandoverCard({ variant = "dashboard" }: { variant?: Va
     try {
       setResult(generateStaticSupervisorHandover());
     } catch {
-      setError("Handover brief is unavailable from this browser session.");
+      setError("Failed to generate handover brief.");
     } finally {
       setIsLoading(false);
     }
