@@ -38,7 +38,7 @@ export function SupervisorHandoverCard({ variant = "dashboard" }: { variant?: Va
     }
   }
 
-  const providerTone = result?.source === "fallback" ? "badge-warn" : "badge-info";
+  const providerTone = result?.source === "fallback" && result.fallbackReason ? "badge-warn" : "badge-info";
   const isReview = variant === "review";
 
   return (
