@@ -1,4 +1,4 @@
-# OSPAT+ Operations Concept
+# SHIFT+ — Safety & Human Impairment Fitness Tracking
 
 A polished MVP web dashboard exploring how a workforce-readiness / fitness-for-work
 platform could surface trends to safety supervisors in mining, transport, civil,
@@ -12,8 +12,9 @@ and heavy-industrial operations.
 
 ## What it is
 
-An operations command-centre style web app that imagines an "insights companion"
-to a quick start-of-shift readiness assessment system:
+An operations command-centre style web app built around **NexCorp SHIFT+** —
+a fictional fitness-for-work system that imagines an "insights companion"
+to a quick start-of-shift readiness assessment:
 
 - Each employee has a **personal baseline** built from their own historical
   performance.
@@ -196,6 +197,8 @@ Because the seed is fixed, screenshots and demo videos stay reproducible.
   secrets to the client
 - Status colors are consistent across badges, dots, sparklines, and charts:
   sage = Pass, amber = Retest, coral = Flag
+- Brand animations: shimmer sweep on the SHIFT+ wordmark, gradient on the
+  NexCorp header, pulsing ring on the shield icon
 
 ## Future roadmap
 
@@ -207,7 +210,7 @@ If this concept were taken to production, the natural next steps would be:
   operations / read-only auditor roles, SSO with site-level scoping
 - **Real backend & database** — Postgres + an ingestion service for assessment
   events, aggregates pre-computed for the dashboard
-- **Integration with physical OSPAT-style test terminals** — secure device
+- **Integration with physical assessment terminals** — secure device
   enrolment, deterministic scoring pipeline, retry / resync semantics
 - **Audit logs** — every supervisor action (acknowledge, note, override)
   recorded immutably for compliance and incident investigations
