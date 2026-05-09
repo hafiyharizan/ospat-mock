@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AlertTriangle, LoaderCircle, Sparkles } from "lucide-react";
 import clsx from "clsx";
-import type { AiHandoverResult } from "@/lib/aiHandover";
+import { generateStaticSupervisorHandover, type AiHandoverResult } from "@/lib/aiHandover";
 
 type Variant = "dashboard" | "review";
 
@@ -14,16 +14,10 @@ const initialCopy = {
     "Turn the current Retest/Flag queue into a supervisor handover using only the already-calculated rule signals.",
 };
 
-function handoverEndpoint() {
-  if (typeof window === "undefined") return "/api/ai/handover";
-  const prefix = window.location.pathname.startsWith("/ospat-mock") ? "/ospat-mock" : "";
-  return `${prefix}/api/ai/handover`;
-}
-
 function providerLabel(result: AiHandoverResult | null) {
-  if (!result) return "OpenRouter ready";
+  if (!result) return "Rule-based brief";
   if (result.source === "openrouter") return "OpenRouter live";
-  return "Rule fallback";
+  return "Rule-based brief";
 }
 
 export function SupervisorHandoverCard({ variant = "dashboard" }: { variant?: Variant }) {
@@ -36,18 +30,9 @@ export function SupervisorHandoverCard({ variant = "dashboard" }: { variant?: Va
     setError(null);
 
     try {
-      const response = await fetch(handoverEndpoint(), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Request failed with ${response.status}`);
-      }
-
-      setResult((await response.json()) as AiHandoverResult);
+      setResult(generateStaticSupervisorHandover());
     } catch {
-      setError("AI handover is unavailable from this browser session.");
+      setError("Handover brief is unavailable from this browser session.");
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +98,7 @@ export function SupervisorHandoverCard({ variant = "dashboard" }: { variant?: Va
           {result ? "Refresh brief" : "Generate brief"}
         </button>
         <span className="font-mono text-[10.5px]" style={{ color: "var(--fg-subtle)" }}>
-          {result ? `${result.caseCount} cases · ${result.model}` : "server-side key"}
+          {result ? `${result.caseCount} cases · ${result.model}` : "local rule engine"}
         </span>
       </div>
     </div>

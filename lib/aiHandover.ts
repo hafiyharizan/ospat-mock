@@ -76,6 +76,21 @@ function fallbackSummary(cases: AiHandoverCase[]): string {
   return lines.join(" ");
 }
 
+function buildFallbackResult(
+  cases: AiHandoverCase[],
+  generatedAt: string,
+  fallbackReason?: string,
+): AiHandoverResult {
+  return {
+    source: "fallback",
+    model: "deterministic-rule-fallback",
+    summary: fallbackSummary(cases),
+    caseCount: cases.length,
+    generatedAt,
+    ...(fallbackReason ? { fallbackReason } : {}),
+  };
+}
+
 function coerceSummary(value: unknown): string {
   if (typeof value !== "string") return "";
   return value.replace(/\s+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
@@ -111,14 +126,7 @@ export async function generateSupervisorHandover(): Promise<AiHandoverResult> {
   const model = process.env.OPENROUTER_MODEL || DEFAULT_MODEL;
 
   if (!apiKey) {
-    return {
-      source: "fallback",
-      model: "deterministic-rule-fallback",
-      summary: fallbackSummary(cases),
-      caseCount: cases.length,
-      generatedAt,
-      fallbackReason: "OPENROUTER_API_KEY is not set",
-    };
+    return buildFallbackResult(cases, generatedAt, "OPENROUTER_API_KEY is not set");
   }
 
   try {
@@ -147,28 +155,14 @@ export async function generateSupervisorHandover(): Promise<AiHandoverResult> {
     });
 
     if (!response.ok) {
-      return {
-        source: "fallback",
-        model: "deterministic-rule-fallback",
-        summary: fallbackSummary(cases),
-        caseCount: cases.length,
-        generatedAt,
-        fallbackReason: `OpenRouter returned ${response.status}`,
-      };
+      return buildFallbackResult(cases, generatedAt, `OpenRouter returned ${response.status}`);
     }
 
     const payload = (await response.json()) as unknown;
     const summary = extractOpenRouterText(payload);
 
     if (!summary) {
-      return {
-        source: "fallback",
-        model: "deterministic-rule-fallback",
-        summary: fallbackSummary(cases),
-        caseCount: cases.length,
-        generatedAt,
-        fallbackReason: "OpenRouter response did not include text",
-      };
+      return buildFallbackResult(cases, generatedAt, "OpenRouter response did not include text");
     }
 
     return {
@@ -179,13 +173,11 @@ export async function generateSupervisorHandover(): Promise<AiHandoverResult> {
       generatedAt,
     };
   } catch {
-    return {
-      source: "fallback",
-      model: "deterministic-rule-fallback",
-      summary: fallbackSummary(cases),
-      caseCount: cases.length,
-      generatedAt,
-      fallbackReason: "OpenRouter request failed",
-    };
+    return buildFallbackResult(cases, generatedAt, "OpenRouter request failed");
   }
+}
+
+export function generateStaticSupervisorHandover(): AiHandoverResult {
+  const cases = buildCases();
+  return buildFallbackResult(cases, new Date().toISOString());
 }
