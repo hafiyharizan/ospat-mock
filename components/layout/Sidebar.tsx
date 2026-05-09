@@ -44,11 +44,11 @@ export function Sidebar() {
           className="flex h-6 w-6 items-center justify-center rounded-md text-xs font-bold"
           style={{ background: "var(--accent)", color: "var(--white)" }}
         >
-          P
+          N
         </div>
         <div className="flex min-w-0 flex-1 flex-col leading-none">
           <span className="text-[13px] font-semibold" style={{ color: "var(--fg)" }}>
-            OSPAT+{" "}
+            SHIFT+{" "}
             <span
               className="font-mono text-[11px]"
               style={{ color: "var(--fg-faint)", fontWeight: 400 }}
@@ -57,7 +57,7 @@ export function Sidebar() {
             </span>
           </span>
           <span className="text-[11px]" style={{ color: "var(--fg-subtle)" }}>
-            Permaconn AU · Production
+            NexCorp AU · Production
           </span>
         </div>
       </div>
@@ -91,7 +91,7 @@ export function Sidebar() {
                   style={{ color: "var(--success)" }}
                 >
                   <span
-                    className="h-[5px] w-[5px] rounded-full animate-ospat-pulse"
+                    className="h-[5px] w-[5px] rounded-full animate-shift-pulse"
                     style={{ background: "var(--success)" }}
                   />
                   247ms
@@ -109,7 +109,7 @@ export function Sidebar() {
       >
         <div
           className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-semibold"
-          style={{ background: "var(--permaconn-green-soft)", color: "var(--accent)" }}
+          style={{ background: "var(--nexcorp-green-soft)", color: "var(--accent)" }}
         >
           RC
         </div>

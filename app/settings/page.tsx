@@ -51,7 +51,7 @@ export default function SettingsPage() {
                   <span
                     className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md"
                     style={{
-                      background: "var(--permaconn-green-soft)",
+                      background: "var(--nexcorp-green-soft)",
                       border: "1px solid color-mix(in oklch, var(--accent) 24%, transparent)",
                       color: "var(--accent)",
                     }}

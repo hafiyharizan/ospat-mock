@@ -15,7 +15,7 @@ const config: Config = {
         display: ["var(--font-inter)", "Inter", "-apple-system", "system-ui"],
       },
       colors: {
-        ospat: {
+        shift: {
           bg:          "var(--bg)",
           "bg-elev":   "var(--bg-elev)",
           "bg-sunken": "var(--bg-sunken)",
@@ -48,7 +48,7 @@ const config: Config = {
       animation: {
         "fade-in":   "fadeIn 200ms cubic-bezier(0.22,1,0.36,1) both",
         "fade-up":   "fadeUp 240ms cubic-bezier(0.22,1,0.36,1) both",
-        "ospat-pulse":"ospatPulse 1.6s ease-in-out infinite",
+        "shift-pulse":"shiftPulse 1.6s ease-in-out infinite",
       },
       keyframes: {
         fadeIn: {
@@ -59,7 +59,7 @@ const config: Config = {
           "0%":   { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        ospatPulse: {
+        shiftPulse: {
           "0%, 100%": { opacity: "1" },
           "50%":      { opacity: "0.35" },
         },

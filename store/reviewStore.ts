@@ -65,7 +65,7 @@ export const useReviewStore = create<ReviewState>()(
         }),
     }),
     {
-      name: "ospat-review-store",
+      name: "shift-review-store",
     },
   ),
 );

@@ -6,7 +6,7 @@ import { ConditionalShell } from "@/components/layout/ConditionalShell";
 const themeInitScript = `
 (() => {
   try {
-    const stored = localStorage.getItem("ospat-theme");
+    const stored = localStorage.getItem("shift-theme");
     const mode = stored === "light" || stored === "dark" || stored === "auto" ? stored : "auto";
     const resolved = mode === "auto"
       ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
@@ -35,9 +35,9 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OSPAT+ | Permaconn",
+  title: "SHIFT+ | NexCorp",
   description:
-    "Permaconn OSPAT+ readiness concept for fitness-for-work signals, personal-band monitoring, and supervisor routing.",
+    "NexCorp SHIFT+ — Safety & Human Impairment Fitness Tracking. Fitness-for-work signals, personal-band monitoring, and supervisor routing.",
 };
 
 export default function RootLayout({
