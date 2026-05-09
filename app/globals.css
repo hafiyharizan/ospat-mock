@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 /* ============================================================
-   OSPAT+ Design System — Permaconn / OSPAT
-   White industrial surfaces · black type · Permaconn green
+   SHIFT+ Design System — NexCorp / SHIFT
+   White industrial surfaces · black type · NexCorp green
    ============================================================ */
 
 :root {
   /* Brand */
-  --permaconn-green: #00a85a;
-  --permaconn-green-2: #008f4d;
-  --permaconn-green-soft: #e7f6ee;
-  --permaconn-black: #050505;
+  --nexcorp-green: #00a85a;
+  --nexcorp-green-2: #008f4d;
+  --nexcorp-green-soft: #e7f6ee;
+  --nexcorp-black: #050505;
 
   /* Neutral */
   --white:         #ffffff;
@@ -55,8 +55,8 @@
   --border-strong: var(--neutral-300);
   --border-faint:  var(--neutral-100);
 
-  --accent:        var(--permaconn-green);
-  --accent-hover:  var(--permaconn-green-2);
+  --accent:        var(--nexcorp-green);
+  --accent-hover:  var(--nexcorp-green-2);
   --accent-fg:     var(--white);
 
   --success:       var(--accent-emerald);
@@ -74,7 +74,7 @@
   --shadow-md: 0 1px 0 0 rgba(5,5,5,0.04), 0 4px 8px -3px rgba(5,5,5,0.08), 0 8px 24px -8px rgba(5,5,5,0.10);
   --shadow-button: 0 1px 0 0 rgba(255,255,255,0.24) inset, 0 1px 2px 0 rgba(5,5,5,0.18), 0 0 0 1px rgba(5,5,5,0.06);
 
-  /* OSPAT concept aliases used by chart/summary components */
+  /* SHIFT concept aliases used by chart/summary components */
   --oc-paper:      var(--bg);
   --oc-paper-2:    var(--bg-elev);
   --oc-ink:        var(--fg);
@@ -122,6 +122,7 @@
   --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.5);
   --shadow-md: 0 6px 16px -6px rgba(0,0,0,0.6);
   --shadow-button: 0 1px 0 0 rgba(255,255,255,0.08) inset, 0 1px 2px 0 rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06);
+  --nexcorp-green-soft: rgba(23, 185, 105, 0.12);
   --oc-paper:      var(--bg);
   --oc-paper-2:    var(--bg-elev);
   --oc-ink:        var(--fg);
@@ -237,7 +238,7 @@ body {
   .badge-gray { background: var(--neutral-50); color: var(--fg-muted); border-color: var(--border); }
 }
 
-@keyframes ospatPulse {
+@keyframes shiftPulse {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.35; }
 }
@@ -248,3 +249,46 @@ body {
 }
 
 .animate-fadein { animation: fadeIn var(--dur-base) var(--ease-out) both; }
+
+/* --- Brand identity --- */
+@keyframes shimmerSweep {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes ringPulse {
+  0%, 100% { box-shadow: 0 0 0 0   color-mix(in oklch, var(--accent) 45%, transparent); }
+  55%       { box-shadow: 0 0 0 10px transparent; }
+}
+
+.nexcorp-heading {
+  background: linear-gradient(
+    108deg,
+    var(--fg) 0%,
+    color-mix(in oklch, var(--accent) 28%, var(--fg)) 65%,
+    color-mix(in oklch, var(--accent) 52%, var(--fg)) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.shift-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--fg)  0%,
+    var(--fg) 28%,
+    color-mix(in oklch, var(--accent) 80%, white) 50%,
+    var(--fg) 72%,
+    var(--fg) 100%
+  );
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmerSweep 5s ease-in-out infinite;
+}
+
+.brand-ring {
+  animation: ringPulse 3s ease-in-out infinite;
+}

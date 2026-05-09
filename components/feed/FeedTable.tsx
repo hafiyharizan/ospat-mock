@@ -33,7 +33,7 @@ export function FeedTable({ rows }: { rows: FeedRow[] }) {
       { header: "Status",       get: (r) => r.status },
       { header: "Anomaly Z",    get: (r) => r.anomalyZ },
     ]);
-    downloadCsv(`ospat-people-${new Date().toISOString().slice(0, 10)}.csv`, csv);
+    downloadCsv(`shift-people-${new Date().toISOString().slice(0, 10)}.csv`, csv);
   };
 
   return (
@@ -122,7 +122,7 @@ export function FeedTable({ rows }: { rows: FeedRow[] }) {
               <tr
                 key={r.assessmentId}
                 style={{ borderBottom: "1px solid var(--border-faint)" }}
-                className="transition-colors hover:bg-ospat-bg-sunken"
+                className="transition-colors hover:bg-shift-bg-sunken"
               >
                 <td className="whitespace-nowrap px-5 py-3 font-mono text-[12px]" style={{ color: "var(--fg-subtle)" }}>
                   {formatDateTime(r.timestampISO)}

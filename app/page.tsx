@@ -50,16 +50,16 @@ export default function RoleSelectorPage() {
         <div className="flex min-w-0 items-center gap-3 sm:gap-4">
           <div
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] text-[26px] font-black leading-none sm:h-12 sm:w-12 sm:rounded-[9px] sm:text-[31px]"
-            style={{ background: "var(--accent)", color: "var(--white)" }}
+            style={{ background: "var(--accent)", color: "var(--white)", boxShadow: "0 0 18px color-mix(in oklch, var(--accent) 50%, transparent)" }}
             aria-hidden="true"
           >
-            P
+            N
           </div>
           <div
-            className="max-w-[185px] truncate text-[22px] font-black uppercase leading-none tracking-[-0.04em] sm:max-w-none sm:text-[40px]"
-            style={{ color: "var(--permaconn-black)" }}
+            className="nexcorp-heading max-w-[185px] truncate text-[22px] font-black uppercase leading-none tracking-[-0.04em] sm:max-w-none sm:text-[40px]"
+            style={{ color: "var(--fg)" }}
           >
-            Permaconn<span className="align-top text-[13px] tracking-normal">TM</span>
+            NexCorp<span className="align-top text-[13px] tracking-normal">TM</span>
           </div>
         </div>
         <div className="ml-auto shrink-0">
@@ -72,9 +72,9 @@ export default function RoleSelectorPage() {
           <div className="mb-10 text-center">
             <div className="mb-5 inline-flex items-center justify-center gap-3">
               <div
-                className="flex h-10 w-10 items-center justify-center rounded-full"
+                className="brand-ring flex h-10 w-10 items-center justify-center rounded-full"
                 style={{
-                  background: "var(--permaconn-green-soft)",
+                  background: "var(--nexcorp-green-soft)",
                   color: "var(--accent)",
                   border: "1px solid color-mix(in oklch, var(--accent) 28%, transparent)",
                 }}
@@ -83,9 +83,9 @@ export default function RoleSelectorPage() {
               </div>
               <span
                 className="text-[34px] font-black uppercase tracking-[-0.045em] sm:text-[38px]"
-                style={{ color: "var(--permaconn-black)" }}
+                style={{ color: "var(--fg)" }}
               >
-                OSPAT<span style={{ color: "var(--accent)" }}>+</span>
+                <span className="shift-shimmer">SHIFT</span><span style={{ color: "var(--accent)" }}>+</span>
               </span>
             </div>
             <p

@@ -91,7 +91,7 @@ function extractOpenRouterText(payload: unknown): string {
 
 function buildPrompt(cases: AiHandoverCase[]): string {
   return [
-    "Create a supervisor handover brief from these already-classified OSPAT+ Retest/Flag cases.",
+    "Create a supervisor handover brief from these already-classified SHIFT+ Retest/Flag cases.",
     "Rules:",
     "- Use only the supplied cases and moved metrics.",
     "- Do not diagnose medical conditions or impairment.",
@@ -128,7 +128,7 @@ export async function generateSupervisorHandover(): Promise<AiHandoverResult> {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
         "HTTP-Referer": "http://localhost:3000",
-        "X-Title": "OSPAT+ Operations Concept",
+        "X-Title": "SHIFT+ Operations Concept",
       },
       body: JSON.stringify({
         model,

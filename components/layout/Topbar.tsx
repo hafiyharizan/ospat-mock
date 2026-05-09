@@ -48,7 +48,7 @@ export function Topbar() {
   const [query, setQuery] = useState("");
   const [focused, setFocused] = useState(false);
   const current = pathname.replace(/^\/ospat-mock(?=\/|$)/, "") || "/";
-  const crumb = BREADCRUMBS[current] ?? { region: "Pilbara", section: "OSPAT+" };
+  const crumb = BREADCRUMBS[current] ?? { region: "Pilbara", section: "SHIFT+" };
   const searchResults = useMemo(() => findSearchResults(query), [query]);
 
   const openFirstResult = (term = query) => {
@@ -174,7 +174,7 @@ export function Topbar() {
         }}
       >
         <span
-          className="h-1.5 w-1.5 rounded-full animate-ospat-pulse"
+          className="h-1.5 w-1.5 rounded-full animate-shift-pulse"
           style={{ background: "var(--success)" }}
         />
         STREAM · 247 ms

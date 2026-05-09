@@ -16,7 +16,7 @@ const ThemeContext = createContext<ThemeContextValue>({
   setTheme: () => {},
 });
 
-export const THEME_STORAGE_KEY = "ospat-theme";
+export const THEME_STORAGE_KEY = "shift-theme";
 
 function isThemeMode(value: string | null): value is ThemeMode {
   return value === "light" || value === "dark" || value === "auto";

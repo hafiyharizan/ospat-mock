@@ -78,14 +78,14 @@ export function MobileNav() {
               className="flex h-7 w-7 items-center justify-center rounded-md text-[13px] font-bold"
               style={{ background: "var(--accent)", color: "var(--white)" }}
             >
-              P
+              N
             </div>
             <div className="flex flex-col leading-none">
               <span className="text-[13.5px] font-semibold" style={{ color: "var(--fg)" }}>
-                OSPAT+
+                SHIFT+
               </span>
               <span className="mt-0.5 font-mono text-[10.5px]" style={{ color: "var(--fg-subtle)" }}>
-                Permaconn AU
+                NexCorp AU
               </span>
             </div>
           </div>
@@ -153,7 +153,7 @@ export function MobileNav() {
           >
             <div
               className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-semibold"
-              style={{ background: "var(--permaconn-green-soft)", color: "var(--accent)" }}
+              style={{ background: "var(--nexcorp-green-soft)", color: "var(--accent)" }}
             >
               RC
             </div>

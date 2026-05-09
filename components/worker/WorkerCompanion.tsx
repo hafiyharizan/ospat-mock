@@ -72,7 +72,7 @@ type MutableStats = {
   coordinationSamples: number;
 };
 
-const BASELINE_KEY = "ospat.worker.baseline.v1";
+const BASELINE_KEY = "shift.worker.baseline.v1";
 const TEST_DURATION_SEC = 30;
 const RESPONSE_WINDOW_MS = 1050;
 const TARGET_HIT_RADIUS = 38;
@@ -1233,7 +1233,7 @@ function ResultScreen({ result, onRetry }: { result: TestResult; onRetry: () => 
               </div>
             </div>
             <span className="badge badge-ok">
-              <span className="h-1.5 w-1.5 rounded-full animate-ospat-pulse" style={{ background: "var(--success)" }} />
+              <span className="h-1.5 w-1.5 rounded-full animate-shift-pulse" style={{ background: "var(--success)" }} />
               notified
             </span>
           </div>
