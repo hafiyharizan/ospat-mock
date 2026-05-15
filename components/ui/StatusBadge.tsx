@@ -13,7 +13,7 @@ const LABELS: Record<AssessmentStatus, string> = {
   Fail:   "Flag",
 };
 
-const DOT_COLOR: Record<AssessmentStatus, string> = {
+export const DOT_COLOR: Record<AssessmentStatus, string> = {
   Pass:   "var(--success)",
   Review: "var(--warning)",
   Fail:   "var(--danger)",

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { DashboardKpis } from "@/lib/types";
-import { RESULT_THRESHOLDS } from "@/lib/risk";
+import { RESULT_THRESHOLDS, toneColor } from "@/lib/risk";
 import { SupervisorHandoverCard } from "@/components/ai/SupervisorHandoverCard";
 
 interface Props {
@@ -36,12 +36,6 @@ const PEOPLE = [
   },
 ];
 
-function toneColor(t: string) {
-  if (t === "err")  return "var(--danger)";
-  if (t === "warn") return "var(--warning)";
-  return "var(--success)";
-}
-
 function Sparkline({
   data, band, width = 140, height = 32, danger = false,
 }: {
@@ -73,33 +67,35 @@ function Sparkline({
   );
 }
 
-function WaveChart() {
-  const W = 800, H = 120;
+const WAVE_W = 800, WAVE_H = 120;
+const wavePts = (() => {
   const pts: [number, number][] = [];
   for (let i = 0; i <= 90; i++) {
-    const x = (i / 90) * W;
-    const base = H * 0.55;
+    const x = (i / 90) * WAVE_W;
+    const base = WAVE_H * 0.55;
     const y = base - Math.sin(i * 0.18) * 20 - Math.sin(i * 0.07 + 1.2) * 12 - Math.sin(i * 0.32) * 5;
     pts.push([x, y]);
   }
-  const linePath = pts.map(([x, y], i) => `${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
-  const fillPath = `${linePath} L ${W} ${H} L 0 ${H} Z`;
+  return pts;
+})();
+const waveLinePath = wavePts.map(([x, y], i) => `${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
+const waveFillPath = `${waveLinePath} L ${WAVE_W} ${WAVE_H} L 0 ${WAVE_H} Z`;
+const waveDots = [
+  { x: 80,  k: "ok"   }, { x: 145, k: "ok"   }, { x: 210, k: "err"  },
+  { x: 275, k: "ok"   }, { x: 350, k: "warn"  }, { x: 420, k: "ok"   },
+  { x: 490, k: "ok"   }, { x: 560, k: "err"   }, { x: 625, k: "ok"   },
+  { x: 690, k: "ok"   }, { x: 755, k: "warn"  }, { x: 790, k: "ok"   },
+].map((dot) => ({
+  ...dot,
+  y: wavePts[Math.round((dot.x / WAVE_W) * 90)]?.[1] ?? WAVE_H * 0.55,
+}));
 
-  const dots: { x: number; k: string; y: number }[] = [
-    { x: 80,  k: "ok"   }, { x: 145, k: "ok"   }, { x: 210, k: "err"  },
-    { x: 275, k: "ok"   }, { x: 350, k: "warn"  }, { x: 420, k: "ok"   },
-    { x: 490, k: "ok"   }, { x: 560, k: "err"   }, { x: 625, k: "ok"   },
-    { x: 690, k: "ok"   }, { x: 755, k: "warn"  }, { x: 790, k: "ok"   },
-  ].map((dot) => ({
-    ...dot,
-    y: pts[Math.round((dot.x / W) * 90)]?.[1] ?? H * 0.55,
-  }));
-
+function WaveChart() {
   const times = ["05:30","05:45","06:00","06:15","06:30","06:45"];
 
   return (
     <div className="relative">
-      <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+      <svg width="100%" height={WAVE_H} viewBox={`0 0 ${WAVE_W} ${WAVE_H}`} preserveAspectRatio="none">
         <defs>
           <linearGradient id="wfill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.10" />
@@ -107,22 +103,17 @@ function WaveChart() {
           </linearGradient>
         </defs>
         {[0.25, 0.5, 0.75].map((t) => (
-          <line key={t} x1="0" y1={H * t} x2={W} y2={H * t}
+          <line key={t} x1="0" y1={WAVE_H * t} x2={WAVE_W} y2={WAVE_H * t}
             stroke="var(--border-faint)" strokeWidth="1" strokeDasharray="2 4" />
         ))}
-        <path d={fillPath} fill="url(#wfill)" />
-        <path d={linePath} stroke="var(--accent)" strokeWidth="1.5" fill="none" />
-        {dots.map((dot, i) => {
-          const c = toneColor(dot.k);
-          return (
-            <g key={i}>
-              <circle cx={dot.x} cy={dot.y} r={dot.k === "err" ? 4.5 : 3.5}
-                fill={c} stroke="var(--bg-elev)" strokeWidth="1.5" />
-            </g>
-          );
-        })}
+        <path d={waveFillPath} fill="url(#wfill)" />
+        <path d={waveLinePath} stroke="var(--accent)" strokeWidth="1.5" fill="none" />
+        {waveDots.map((dot, i) => (
+          <circle key={i} cx={dot.x} cy={dot.y} r={dot.k === "err" ? 4.5 : 3.5}
+            fill={toneColor(dot.k)} stroke="var(--bg-elev)" strokeWidth="1.5" />
+        ))}
         {times.map((t, i) => (
-          <text key={t} x={(i / (times.length - 1)) * W} y={H - 3}
+          <text key={t} x={(i / (times.length - 1)) * WAVE_W} y={WAVE_H - 3}
             fontFamily="var(--font-mono)" fontSize="10"
             fill="var(--fg-subtle)"
             textAnchor={i === 0 ? "start" : i === times.length - 1 ? "end" : "middle"}>
@@ -201,10 +192,8 @@ export function LiveDashboard({ kpis }: Props) {
 
   return (
     <div className="flex h-full min-h-0" style={{ background: "var(--bg)" }}>
-      {/* ── Main column */}
       <div className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-6">
 
-        {/* KPI row */}
         <div className="grid shrink-0 grid-cols-2 gap-3 xl:grid-cols-4">
           {kpiCards.map((card) => (
             <div key={card.label} className="card-padded" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -241,7 +230,6 @@ export function LiveDashboard({ kpis }: Props) {
           ))}
         </div>
 
-        {/* Wave panel */}
         <div className="card shrink-0 overflow-hidden">
           <div
             className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:px-5"
@@ -273,7 +261,6 @@ export function LiveDashboard({ kpis }: Props) {
           </div>
         </div>
 
-        {/* Needs attention table */}
         <div className="card flex shrink-0 flex-col overflow-hidden">
           <div
             className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:px-5"
@@ -293,7 +280,6 @@ export function LiveDashboard({ kpis }: Props) {
             </div>
           </div>
 
-          {/* Mobile list */}
           <div className="divide-y md:hidden" style={{ borderColor: "var(--border-faint)" }}>
             {PEOPLE.map((p) => (
               <div key={p.id} className="px-4 py-4">
@@ -353,7 +339,6 @@ export function LiveDashboard({ kpis }: Props) {
             ))}
           </div>
 
-          {/* Desktop table head */}
           <div
             className="hidden px-5 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.04em] md:grid"
             style={{
@@ -372,7 +357,6 @@ export function LiveDashboard({ kpis }: Props) {
             <div style={{ textAlign: "right" }}>Action</div>
           </div>
 
-          {/* Rows */}
           <div className="hidden md:block">
           {PEOPLE.map((p, i) => (
             <div
@@ -386,7 +370,6 @@ export function LiveDashboard({ kpis }: Props) {
                 fontSize: 13,
               }}
             >
-              {/* Worker */}
               <div className="flex items-center gap-2.5 min-w-0">
                 <div
                   className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md font-mono text-[11px] font-semibold"
@@ -404,7 +387,6 @@ export function LiveDashboard({ kpis }: Props) {
                 </div>
               </div>
 
-              {/* Score */}
               <div className="flex items-baseline gap-1.5">
                 <span
                   className="font-mono text-[22px] font-semibold leading-none"
@@ -418,7 +400,6 @@ export function LiveDashboard({ kpis }: Props) {
                 </span>
               </div>
 
-              {/* Sparkline */}
               <div>
                 <Sparkline data={p.data} band={p.band} width={150} height={32} danger={p.tone === "err"} />
                 <div className="mt-0.5 font-mono text-[10px]" style={{ color: "var(--fg-faint)" }}>
@@ -426,7 +407,6 @@ export function LiveDashboard({ kpis }: Props) {
                 </div>
               </div>
 
-              {/* Signal */}
               <div>
                 <div className="text-[12.5px] leading-snug" style={{ color: "var(--fg)" }}>
                   {p.signal}
@@ -452,12 +432,10 @@ export function LiveDashboard({ kpis }: Props) {
                 </div>
               </div>
 
-              {/* Site */}
               <div className="font-mono text-[11.5px] truncate" style={{ color: "var(--fg-muted)" }}>
                 {p.site}
               </div>
 
-              {/* Action */}
               <div style={{ textAlign: "right" }}>
                 <Link
                   href={`/employees/${p.id.replace("#W-", "emp-")}`}
@@ -473,7 +451,6 @@ export function LiveDashboard({ kpis }: Props) {
         </div>
       </div>
 
-      {/* ── Right rail: thresholds + AI assist */}
       <aside
         className="hidden xl:flex xl:w-80 xl:flex-shrink-0 xl:flex-col gap-3 overflow-y-auto p-5"
         style={{ borderLeft: "1px solid var(--border)", background: "var(--bg)" }}

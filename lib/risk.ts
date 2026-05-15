@@ -1,5 +1,13 @@
 import type { AssessmentStatus, BaselineMetrics, MetricSet } from "./types";
 
+export type Tone = "ok" | "warn" | "err";
+
+export function toneColor(tone: Tone | string): string {
+  if (tone === "err") return "var(--danger)";
+  if (tone === "warn") return "var(--warning)";
+  return "var(--success)";
+}
+
 export const RESULT_THRESHOLDS = [
   {
     label: "Pass",
