@@ -4,7 +4,7 @@ import { ArrowLeft, Lightbulb, MapPin, User } from "lucide-react";
 import { getEmployeeDetail, getEmployees } from "@/lib/data";
 import { ChartCard } from "@/components/charts/ChartCard";
 import { EmployeeScoreChart } from "@/components/charts/EmployeeScoreChart";
-import { StatusBadge } from "@/components/ui/StatusBadge";
+import { StatusBadge, DOT_COLOR } from "@/components/ui/StatusBadge";
 import { formatDateTime } from "@/lib/format";
 import { readinessScore } from "@/lib/risk";
 import type { AssessmentStatus } from "@/lib/types";
@@ -28,9 +28,6 @@ export default async function EmployeeDetailPage({
     label: a.timestampISO.slice(5, 10),
   }));
   const readinessBaseline = readinessScore(detail.employee.baseline);
-
-  const dotColor = (status: AssessmentStatus) =>
-    status === "Pass" ? "var(--success)" : status === "Review" ? "var(--warning)" : "var(--danger)";
 
   return (
     <div className="p-4 sm:p-6">
@@ -110,11 +107,11 @@ export default async function EmployeeDetailPage({
             <h3 className="text-[13.5px] font-semibold" style={{ color: "var(--fg)" }}>Timeline</h3>
           </div>
           <ul className="max-h-80 overflow-y-auto px-5 py-3 flex flex-col gap-3">
-            {[...detail.recent].reverse().slice(0, 12).map((a) => (
+            {detail.recent.slice(-12).reverse().map((a) => (
               <li key={a.id} className="flex items-start gap-3">
                 <span
                   className="mt-1.5 h-2 w-2 rounded-full flex-shrink-0"
-                  style={{ background: dotColor(a.status) }}
+                  style={{ background: DOT_COLOR[a.status] }}
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">

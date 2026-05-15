@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import type { PointerEvent } from "react";
 import Link from "next/link";
 import { ArrowLeft, LogOut, RotateCcw } from "lucide-react";
+import { toneColor } from "@/lib/risk";
 
 type Stage = "pre" | "test" | "result";
 type TestMode = "touch" | "tilt";
@@ -83,7 +84,6 @@ const TARGET_CENTER_ACTIVE_RADIUS = 8;
 const USER_HALO_RADIUS = 34;
 const USER_DOT_RADIUS = 9;
 
-/* Worker data */
 const WORKER = {
   name: "Marcus Tran",
   id: "#W-2841",
@@ -132,12 +132,6 @@ function formatReactionDeviation(value: number | null) {
   if (value === null) return "No reaction baseline yet";
   if (Math.abs(value) < 1) return "Reaction time is aligned with baseline";
   return `Reaction time is ${Math.abs(value).toFixed(1)}% ${value > 0 ? "slower" : "faster"} than baseline`;
-}
-
-function toneColor(tone: Tone) {
-  if (tone === "err") return "var(--danger)";
-  if (tone === "warn") return "var(--warning)";
-  return "var(--success)";
 }
 
 function decisionTone(decision: Decision): Tone {
@@ -295,7 +289,6 @@ function buildResult(metrics: TestMetrics, baseline: Baseline | null): TestResul
   };
 }
 
-/* Pre-shift sparkline */
 function Sparkline() {
   const W = 260;
   const H = 60;
@@ -661,6 +654,9 @@ function TestScreen({
     syncLive();
   }, [scheduleNextEvent, syncLive]);
 
+  const onCompleteRef = useRef(onComplete);
+  useEffect(() => { onCompleteRef.current = onComplete; });
+
   const finishTest = useCallback(() => {
     if (doneRef.current) return;
     doneRef.current = true;
@@ -670,7 +666,7 @@ function TestScreen({
     }
 
     const finalLive = getLiveStats();
-    onComplete({
+    onCompleteRef.current({
       durationSec: TEST_DURATION_SEC,
       mode,
       avgReactionMs: finalLive.avgReactionMs,
@@ -681,7 +677,7 @@ function TestScreen({
       hitEvents: finalLive.hitEvents,
       readinessScore: finalLive.readinessScore,
     });
-  }, [getLiveStats, mode, onComplete]);
+  }, [getLiveStats, mode]);
 
   const setUserPoint = useCallback(
     (x: number, y: number) => {
@@ -1151,6 +1147,7 @@ function SummaryPanel({ result }: { result: TestResult }) {
 
 function ResultScreen({ result, onRetry }: { result: TestResult; onRetry: () => void }) {
   const tone = decisionTone(result.decision);
+  const accentColor = toneColor(tone);
   const supervisorRequired = result.decision !== "FIT";
 
   return (
@@ -1175,8 +1172,8 @@ function ResultScreen({ result, onRetry }: { result: TestResult; onRetry: () => 
       <div
         className="mt-5 rounded-xl p-4"
         style={{
-          background: `color-mix(in oklch, ${toneColor(tone)} 8%, var(--bg))`,
-          border: `1px solid color-mix(in oklch, ${toneColor(tone)} 25%, transparent)`,
+          background: `color-mix(in oklch, ${accentColor} 8%, var(--bg))`,
+          border: `1px solid color-mix(in oklch, ${accentColor} 25%, transparent)`,
         }}
       >
         <div className="flex items-center gap-4">
@@ -1196,11 +1193,11 @@ function ResultScreen({ result, onRetry }: { result: TestResult; onRetry: () => 
 
         <div
           className="mt-4 grid gap-2 pt-3"
-          style={{ borderTop: `1px solid color-mix(in oklch, ${toneColor(tone)} 18%, transparent)` }}
+          style={{ borderTop: `1px solid color-mix(in oklch, ${accentColor} 18%, transparent)` }}
         >
           {result.explanations.map((explanation) => (
             <div key={explanation} className="text-[12.5px] leading-relaxed" style={{ color: "var(--fg-muted)" }}>
-              <span className="font-semibold" style={{ color: toneColor(tone) }}>
+              <span className="font-semibold" style={{ color: accentColor }}>
                 Rule:
               </span>{" "}
               {explanation}
@@ -1262,7 +1259,7 @@ function ResultScreen({ result, onRetry }: { result: TestResult; onRetry: () => 
           href="/"
           className="flex h-12 flex-[1.15] items-center justify-center rounded-xl text-[14px] font-semibold"
           style={{
-            background: tone === "err" ? "var(--danger)" : tone === "warn" ? "var(--warning)" : "var(--success)",
+            background: accentColor,
             color: "var(--white)",
             border: "none",
             boxShadow: "var(--shadow-button)",
